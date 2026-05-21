@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="chiq.uz creates public tunnels for localhost with request inspection, replay, HTTP and TCP forwarding, custom domains, and traffic controls.">
+  <title>chiq.uz - Public tunnels for local development</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; }
+    :root {
+      --black: #050505;
+      --white: #FFFFFF;
+      --panel: #171717;
+      --radius: 8px;
+      --green: #7CFFB2;
+      --blue: #7CCBFF;
+      --violet: #C9A3FF;
+      --amber: #FFD36E;
+      --red: #FF6B6B;
+      --scroll: 0;
+    }
+    html { background: var(--black); color: var(--white); scroll-behavior: smooth; }
+    body { margin: 0; min-width: 320px; background: var(--black); color: var(--white); font-family: Inter, system-ui, sans-serif; overflow-x: hidden; }
+    a { color: inherit; }
+    button { font: inherit; }
+    .progress { position: fixed; left: 0; top: 0; z-index: 50; width: calc(var(--scroll) * 100%); height: 2px; background: var(--white); pointer-events: none; }
+    .wrap { width: min(1120px, calc(100% - 44px)); margin: 0 auto; }
+
+    .nav { position: sticky; top: 16px; z-index: 30; width: max-content; max-width: calc(100% - 32px); min-height: 54px; margin: 16px auto 0; padding: 6px; display: flex; align-items: center; gap: 4px; border-radius: 999px; background: var(--panel); }
+    .nav a, .nav button { min-height: 38px; border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: transparent; color: var(--white); white-space: nowrap; }
+    .nav-logo { padding: 0 18px; font-weight: 700; opacity: 1; }
+    .nav-links { display: flex; gap: 4px; }
+    .nav-links a { padding: 0 14px; opacity: .72; font-size: 13px; transition: opacity .2s ease; }
+    .nav-links a:hover { opacity: 1; }
+    .nav-early { padding: 0 16px; background: var(--white) !important; color: var(--black) !important; font-size: 13px; font-weight: 700; }
+    .nav-burger, .nav-dropdown { display: none; }
+
+    .hero { min-height: calc(100vh - 72px); display: grid; place-items: center; padding: 56px 22px 96px; text-align: center; }
+    .hero-inner { width: min(900px, 100%); }
+    .kicker, .mono-label { margin: 0; color: var(--white); font: 700 11px/1.2 "JetBrains Mono", monospace; letter-spacing: .24em; text-transform: uppercase; opacity: .82; }
+    h1, h2, h3 { color: var(--white); font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; letter-spacing: -.055em; }
+    h1 { margin: 18px 0 0; font-size: clamp(64px, 8.4vw, 120px); line-height: .84; text-wrap: balance; }
+    h2 { margin: 12px 0 0; font-size: clamp(46px, 6vw, 82px); line-height: .9; text-wrap: balance; }
+    h3 { margin: 0 0 12px; font-size: 32px; line-height: .96; }
+    .lead { width: min(720px, 100%); margin: 28px auto 34px; color: var(--white); opacity: .72; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.65; text-wrap: balance; }
+    .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
+    .btn { min-width: 150px; height: 42px; padding: 0 22px; border: 1px solid var(--white); border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: var(--black); color: var(--white); text-decoration: none; font: 700 12px/1 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase; transition: background .2s ease, color .2s ease; }
+    .btn:hover { background: var(--white); color: var(--black); }
+
+    .section { padding: 104px 0; scroll-margin-top: 90px; }
+    .section.compact { padding-top: 72px; }
+    .section-head { display: grid; grid-template-columns: minmax(0, .75fr) minmax(280px, .42fr); gap: 48px; align-items: end; margin-bottom: 36px; }
+    .section-copy { margin: 0; color: var(--white); opacity: .68; line-height: 1.72; font-size: 16px; }
+    .panel, .note, .step, .control, .case, .price-copy, .price-aside, .faq-item { border-radius: var(--radius); background: var(--panel); color: var(--white); }
+
+    .quick-layout { display: grid; grid-template-columns: minmax(0, .86fr) minmax(340px, .62fr); gap: 18px; align-items: start; }
+    .cli-preview { overflow: hidden; border-radius: var(--radius); background: var(--panel); }
+    .cli-preview-bar { display: flex; gap: 6px; padding: 12px 16px; background: #111111; }
+    .cli-preview-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--white); opacity: .44; }
+    .cli-preview-body { padding: 22px 24px 26px; font: 600 13px/1.9 "JetBrains Mono", monospace; }
+    .prompt, .cmd, .code-command { color: var(--green); }
+    .label-line, .code-flag { color: var(--violet); display: inline-block; min-width: 96px; }
+    .val, .code-subcommand { color: var(--blue); }
+    .val-local, .code-value { color: var(--amber); }
+    .dim { opacity: .5; }
+    .steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; min-width: 0; }
+    .step { min-width: 0; min-height: 220px; max-width: 100%; padding: 24px; display: flex; flex-direction: column; }
+    .step-tag { width: max-content; max-width: 100%; margin-bottom: 14px; padding: 3px 10px; border-radius: 999px; font: 700 10px/1.6 "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; background: #232323; color: var(--green); }
+    .step h3 { font-family: Inter, system-ui, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0; line-height: 1.3; }
+    .step p { margin: 0 0 16px; color: var(--white); opacity: .62; font-size: 14px; line-height: 1.55; }
+    .step-code { width: 100%; min-width: 0; margin-top: auto; padding: 10px 14px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: #0b0b0b; color: var(--green); font: 600 12.5px/1.4 "JetBrains Mono", monospace; overflow: hidden; }
+    .step-code code { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; white-space: nowrap; scrollbar-width: thin; }
+    .copy-btn { flex: 0 0 30px; width: 30px; height: 30px; border: 0; border-radius: 6px; display: grid; place-items: center; background: #171717; color: var(--white); cursor: pointer; opacity: .68; }
+    .copy-btn svg { width: 15px; height: 15px; }
+
+    .notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .note { min-height: 174px; padding: 22px; }
+    .note strong, .control strong { display: block; margin-bottom: 14px; font: 700 12px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
+    .note span, .control span { display: block; opacity: .68; font-size: 15px; line-height: 1.62; }
+
+    .workflow { display: grid; grid-template-columns: minmax(0, .9fr) minmax(320px, .72fr); gap: 28px; align-items: center; }
+    .terminal { padding: 24px; font: 600 13px/1.85 "JetBrains Mono", monospace; }
+    .terminal .key { display: inline-block; min-width: 64px; color: var(--violet); }
+    .terminal .url { color: var(--blue); }
+    .terminal .local, .request-row span:nth-child(2) { color: var(--amber); }
+    .terminal .policy { color: var(--violet); }
+    .request-row { display: grid; grid-template-columns: 58px 1fr 64px; gap: 12px; padding: 16px 18px; border-top: 1px solid var(--black); font: 700 12px/1.25 "JetBrains Mono", monospace; opacity: .78; }
+    .request-row.ok b, .request-row.ok span:last-child { color: var(--green); }
+    .request-row.redirect b, .request-row.redirect span:last-child { color: var(--blue); }
+    .request-row.live b, .request-row.live span:last-child { color: var(--violet); }
+    .request-row.error b, .request-row.error span:last-child { color: var(--red); }
+
+    .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .control { min-height: 188px; padding: 24px; }
+    .use-cases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+    .case { min-height: 236px; padding: 24px; }
+    .case p { margin: 0; opacity: .66; line-height: 1.65; font-size: 14px; }
+    .price-card { display: grid; grid-template-columns: minmax(0, .78fr) minmax(280px, .38fr); gap: 14px; }
+    .price-copy, .price-aside { padding: 30px; }
+    .price-copy p, .final p { margin: 0; opacity: .68; line-height: 1.72; }
+    .price-aside ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 12px; opacity: .72; font-size: 14px; }
+    .price-aside li::before { content: "+ "; font-family: "JetBrains Mono", monospace; font-weight: 700; }
+    .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+    .faq-item { padding: 20px; }
+    .faq-item h3 { margin: 0 0 9px; font-family: Inter, system-ui, sans-serif; font-size: 16px; letter-spacing: 0; }
+    .faq-item p { margin: 0; opacity: .66; line-height: 1.65; font-size: 14px; }
+    .final { min-height: 68vh; display: grid; place-items: center; text-align: center; padding: 110px 0; }
+    .final h2 { width: min(780px, 100%); margin-inline: auto; }
+    .final p { width: min(590px, 100%); margin: 24px auto 32px; }
+    footer { padding: 26px 0; }
+    .footer-inner { display: flex; justify-content: space-between; gap: 18px; opacity: .56; font-size: 13px; }
+    [data-reveal] { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
+    [data-reveal].visible { opacity: 1; transform: translateY(0); }
+
+    @media (max-width: 960px) {
+      .nav { top: 10px; width: calc(100% - 28px); min-height: 50px; justify-content: space-between; }
+      .nav-links { display: none; }
+      .nav-burger { width: 38px; height: 38px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #242424; cursor: pointer; }
+      .nav-burger span { width: 18px; height: 1.5px; margin: 2px 0; display: block; background: var(--white); border-radius: 2px; }
+      .nav-dropdown { position: absolute; top: calc(100% + 8px); left: 0; right: 0; padding: 8px; border-radius: 16px; display: none; background: var(--panel); }
+      .nav-dropdown.open { display: block; }
+      .nav-dropdown a { min-height: 46px; padding: 0 18px; border-radius: 10px; display: flex; align-items: center; text-decoration: none; opacity: .82; }
+      .hero { min-height: calc(100vh - 96px); padding: 44px 18px 70px; }
+      .section { padding: 78px 0; }
+      .section-head, .workflow, .quick-layout, .price-card { grid-template-columns: 1fr; }
+      .notes, .controls, .use-cases, .steps, .faq { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 620px) {
+      .wrap { width: min(100% - 36px, 1120px); }
+      h1 { font-size: clamp(58px, 17vw, 84px); }
+      .actions .btn { width: 100%; max-width: 320px; }
+      .step, .note, .control, .case, .price-copy, .price-aside, .faq-item { padding: 22px; }
+      .step { width: 100%; min-height: 220px; }
+      .terminal { padding: 22px; }
+      .request-row { grid-template-columns: 48px 1fr; }
+      .request-row span:last-child { display: none; }
+      .footer-inner { flex-direction: column; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+  </style>
+</head>
+<body>
+  <div class="progress"></div>
+  <main class="main" id="top">
+    <nav class="nav" aria-label="Navigation">
+      <a class="nav-logo" href="#top">chiq</a>
+      <div class="nav-links">
+        <a href="#quickstart">Quickstart</a>
+        <a href="#features">Features</a>
+        <a href="#workflow">Workflow</a>
+        <a href="#use-cases">Use cases</a>
+        <a href="#pricing">Pricing</a>
+      </div>
+      <a href="https://t.me/bkzd19" target="_blank" class="nav-early">Early access</a>
+      <button class="nav-burger" id="nav-burger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+      <div class="nav-dropdown" id="nav-dropdown">
+        <a href="#quickstart">Quickstart</a><a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#use-cases">Use cases</a><a href="#pricing">Pricing</a>
+      </div>
+    </nav>
+
+    <section class="hero">
+      <div class="hero-inner">
+        <p class="kicker">Public tunnels for local work</p>
+        <h1>Put localhost on the internet.</h1>
+        <p class="lead">Chiq gives local apps, APIs, webhooks, and TCP services a secure public surface. Start a tunnel, inspect live traffic, replay requests, and keep control without deploying.</p>
+        <div class="actions"><a class="btn" target="_blank" href="https://t.me/bkzd19">Early access</a><a class="btn" href="#quickstart">Show CLI</a></div>
+      </div>
+    </section>
+
+    <section class="section" id="quickstart" data-section>
+      <div class="wrap quick-layout">
+        <div>
+          <span class="mono-label">Getting started</span>
+          <h2>Up and running in seconds.</h2>
+          <p class="section-copy">One install, one login. Tunnel HTTP, TCP, static files, readable subdomains, and custom domains straight from your terminal.</p>
+        </div>
+        <div class="cli-preview" data-reveal>
+          <div class="cli-preview-bar"><span class="cli-preview-dot"></span><span class="cli-preview-dot"></span><span class="cli-preview-dot"></span></div>
+          <div class="cli-preview-body"><div><b class="prompt">$</b> <span class="cmd">chiq http 3000</span></div><div class="dim">chiq 1.0 - press Ctrl+C to quit</div><br><div><span class="label-line">Status:</span> <span class="val">Online</span></div><div><span class="label-line">Protocol:</span> <span class="val">HTTP</span></div><div><span class="label-line">Forwarded:</span> <span class="val">app.chiq.uz</span> -> <span class="val-local">127.0.0.1:3000</span></div></div>
+        </div>
+      </div>
+      <div class="wrap" style="margin-top:18px"><div class="steps">
+        <div class="step" data-reveal><span class="step-tag">Install</span><h3>Install chiq CLI</h3><p>Install the CLI from the official install script.</p><div class="step-code"><code>curl -fsSL https://chiq.uz/install.sh | sudo bash</code><button class="copy-btn" data-copy="curl -fsSL https://chiq.uz/install.sh | sudo bash" aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">Authenticate</span><h3>Connect your token</h3><p>Obtain an auth token from chiq.uz/auth, then authenticate.</p><div class="step-code"><code>chiq auth &lt;your-auth-token&gt;</code><button class="copy-btn" data-copy="chiq auth <your-auth-token>" aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">HTTP</span><h3>Start an HTTP tunnel</h3><p>Replace 3000 with the local port you want to expose.</p><div class="step-code"><code>chiq http 3000</code><button class="copy-btn" data-copy="chiq http 3000" aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">TCP</span><h3>Start a TCP tunnel</h3><p>Expose SSH, databases, sockets, or internal tools.</p><div class="step-code"><code>chiq tcp 22</code><button class="copy-btn" data-copy="chiq tcp 22" aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">Subdomain</span><h3>Reserve a readable URL</h3><p>Use a stable subdomain for repeated callbacks.</p><div class="step-code"><code>chiq http 3000 -s custom</code><button class="copy-btn" data-copy="chiq http 3000 -s custom" aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">Static files</span><h3>Serve a directory</h3><p>Publish a local folder through the built-in server.</p><div class="step-code"><code>chiq serve .</code><button class="copy-btn" data-copy="chiq serve ." aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">Debug</span><h3>Open the tunnel debugger</h3><p>Start an HTTP tunnel with live request inspection.</p><div class="step-code"><code>chiq http 3000 --debug</code><button class="copy-btn" data-copy="chiq http 3000 --debug" aria-label="Copy command">⧉</button></div></div>
+        <div class="step" data-reveal><span class="step-tag">CNAME</span><h3>Use your own domain</h3><p>Point your domain CNAME, then start the tunnel.</p><div class="step-code"><code>chiq http 3000 --cname example.com</code><button class="copy-btn" data-copy="chiq http 3000 --cname example.com" aria-label="Copy command">⧉</button></div></div>
+      </div></div>
+    </section>
+
+    <section class="section compact" id="features" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">Core features</span><h2>Expose, inspect, control.</h2></div><p class="section-copy">A focused tunnel workflow: public endpoints, live request context, replay, reserved names, custom domains, and HTTP or TCP forwarding.</p></div><div class="notes"><div class="note" data-reveal><strong>Public endpoints</strong><span>Turn a local port into a reachable HTTPS URL for demos, callbacks, previews, and test environments.</span></div><div class="note" data-reveal><strong>Traffic inspector</strong><span>Read method, route, status, latency, headers, response, and body without leaving your development flow.</span></div><div class="note" data-reveal><strong>Any local service</strong><span>Forward web apps, APIs, webhooks, SSH, databases, WebSockets, queues, and other TCP services.</span></div></div></div></section>
+
+    <section class="section" id="workflow" data-section><div class="wrap workflow"><div data-reveal><span class="mono-label">Workflow</span><h2>Terminal speed. Dashboard memory.</h2><p class="section-copy">Start from the CLI when you need speed. Keep session history when you need answers: what failed, what arrived, which route was slow, and what should be replayed.</p></div><div class="panel" data-reveal><div class="terminal"><div><b class="prompt">$</b> <span class="cmd">chiq http 4242 --name webhooks</span></div><div><span class="key">public</span> <span class="url">https://webhooks.chiq.uz</span></div><div><span class="key">local</span> <span class="local">localhost:4242</span></div><div><span class="key">policy</span> <span class="policy">auth, replay, request log</span></div></div><div class="request-list"><div class="request-row ok"><b>200</b><span>POST /webhooks/order.created</span><span>47ms</span></div><div class="request-row redirect"><b>302</b><span>GET /oauth/callback</span><span>18ms</span></div><div class="request-row live"><b>101</b><span>TCP / ssh-forward</span><span>live</span></div><div class="request-row error"><b>500</b><span>POST /webhooks/retry-me</span><span>91ms</span></div></div></div></div></section>
+
+    <section class="section" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">Traffic controls</span><h2>Rules before traffic reaches your code.</h2></div><p class="section-copy">Public does not have to mean uncontrolled. Attach simple policies to keep local services reachable only in the way you intended.</p></div><div class="controls"><div class="control" data-reveal><strong>Access guard</strong><span>Protect previews with tokens, basic auth, or allowed client ranges.</span></div><div class="control" data-reveal><strong>Route shaping</strong><span>Rewrite paths, add headers, redirect requests, or split traffic.</span></div><div class="control" data-reveal><strong>Replay loop</strong><span>Save a failed webhook, fix the handler, then send the exact request again.</span></div><div class="control" data-reveal><strong>Stable identity</strong><span>Use reserved subdomains and custom domains when one address must not change.</span></div></div></div></section>
+
+    <section class="section" id="use-cases" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">Use cases</span><h2>Built for the moments before deploy.</h2></div><p class="section-copy">Use chiq.uz when the outside world needs to reach something still running on your laptop, test box, private network, or short-lived preview.</p></div><div class="use-cases"><article class="case" data-reveal><h3>Webhook testing</h3><p>Receive callbacks on localhost. Inspect payloads and replay until the handler is right.</p></article><article class="case" data-reveal><h3>Live previews</h3><p>Share a local build without provisioning staging for every small review.</p></article><article class="case" data-reveal><h3>Mobile QA</h3><p>Open your local web app or API from a phone, tablet, or remote device.</p></article><article class="case" data-reveal><h3>Private access</h3><p>Forward TCP traffic for databases, SSH, internal tools, sockets, and services.</p></article></div></div></section>
+
+    <section class="section" id="pricing" data-section><div class="wrap"><div class="price-card" data-reveal><div class="price-copy"><span class="mono-label">Pricing</span><h3>Start with early access. Keep the plan simple.</h3><p>Early access includes public HTTPS tunnels, TCP forwarding, inspection, replay, reserved subdomains, custom domains, and basic traffic controls.</p></div><div class="price-aside"><span class="mono-label">Included direction</span><ul><li>Concurrent tunnels</li><li>Reserved names</li><li>Custom domains</li><li>HTTP and TCP</li><li>Live inspector</li><li>Request replay</li></ul></div></div></div></section>
+
+    <section class="section" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">FAQ</span><h2>Short answers.</h2></div><p class="section-copy">Enough context without turning the landing page into full documentation.</p></div><div class="faq"><article class="faq-item" data-reveal><h3>Can I inspect webhook payloads?</h3><p>Yes. Incoming requests should show headers, body, status, timing, and route context.</p></article><article class="faq-item" data-reveal><h3>Does it work from the terminal?</h3><p>Yes. The CLI is the fastest path for opening and controlling a tunnel.</p></article><article class="faq-item" data-reveal><h3>Can I use a stable URL?</h3><p>Reserved subdomains and custom domains are part of the planned workflow.</p></article><article class="faq-item" data-reveal><h3>Is TCP supported?</h3><p>Yes. The product direction covers HTTP tunnels and raw TCP forwarding.</p></article></div></div></section>
+
+    <section class="final" data-section><div class="wrap" data-reveal><span class="mono-label">Early access</span><h2>Give your local work a public surface.</h2><p>Join the early list and help shape a tunnel workflow for fast, precise local development.</p><div class="actions"><a class="btn" target="_blank" href="https://t.me/bkzd19">Request access</a><a class="btn" href="#quickstart">View CLI</a></div></div></section>
+    <footer><div class="wrap footer-inner"><span>chiq.uz</span><span>Write locally. Share publicly. Debug precisely.</span></div></footer>
+  </main>
+  <script>
+    const root = document.documentElement;
+    const revealItems = document.querySelectorAll('[data-reveal]');
+    function updateScroll(){ const max=document.documentElement.scrollHeight-window.innerHeight; root.style.setProperty('--scroll', max>0 ? (window.scrollY/max).toFixed(4) : 0); }
+    window.addEventListener('scroll', updateScroll, {passive:true}); window.addEventListener('resize', updateScroll); updateScroll();
+    document.querySelectorAll('a[href^="#"]').forEach(link=>{ link.addEventListener('click', e=>{ const target=document.querySelector(link.getAttribute('href')); if(!target) return; e.preventDefault(); history.pushState(null,'',link.getAttribute('href')); const nav=document.querySelector('.nav'); const top=target.getBoundingClientRect().top+window.scrollY-(nav?nav.getBoundingClientRect().height+22:22); window.scrollTo({top:Math.max(0,top),behavior:'smooth'}); document.getElementById('nav-dropdown')?.classList.remove('open'); document.getElementById('nav-burger')?.classList.remove('open'); }); });
+    const burger=document.getElementById('nav-burger'); const dropdown=document.getElementById('nav-dropdown'); burger?.addEventListener('click',()=>{ burger.classList.toggle('open'); dropdown.classList.toggle('open'); });
+    document.querySelectorAll('.copy-btn').forEach(btn=>{ btn.addEventListener('click', async()=>{ try{ await navigator.clipboard.writeText(btn.getAttribute('data-copy')); btn.classList.add('copied'); setTimeout(()=>btn.classList.remove('copied'),1000); }catch(e){} }); });
+    const revealObserver=new IntersectionObserver(entries=>{ entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add('visible'); }); },{threshold:.14}); revealItems.forEach(item=>revealObserver.observe(item));
+  </script>
+</body>
+</html>
