@@ -151,21 +151,33 @@
 <body>
   <div class="progress"></div>
   <main class="main" id="top">
-    <nav class="nav" aria-label="Navigation">
-      <a class="nav-logo" href="#top">chiq</a>
-      <div class="nav-links">
-        <a href="#quickstart">Quickstart</a>
-        <a href="#features">Features</a>
-        <a href="#workflow">Workflow</a>
-        <a href="#use-cases">Use cases</a>
-        <a href="#pricing">Pricing</a>
-      </div>
-      <a href="https://t.me/bkzd19" target="_blank" class="nav-early">Early access</a>
-      <button class="nav-burger" id="nav-burger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-      <div class="nav-dropdown" id="nav-dropdown">
-        <a href="#quickstart">Quickstart</a><a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#use-cases">Use cases</a><a href="#pricing">Pricing</a>
-      </div>
-    </nav>
+   <nav class="nav" aria-label="Navigation">
+  <!-- Google Fonts'dan Knewave fontini yuklash va logoga berish -->
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Knewave&display=swap');
+    .nav-logo-custom {
+      font-family: 'Knewave', system-ui, sans-serif !important;
+      /* Agar logoning o'lchami yoki ko'rinishini biroz moslash kerak bo'lsa, pastdagi qatorlarni ham ishlatsangiz bo'ladi: */
+      /* font-weight: 400; */
+      /* letter-spacing: 0.5px; */
+    }
+  </style>
+
+  <a class="nav-logo nav-logo-custom" href="#top">chiq</a>
+  
+  <div class="nav-links">
+    <a href="#quickstart">Quickstart</a>
+    <a href="#features">Features</a>
+    <a href="#workflow">Workflow</a>
+    <a href="#use-cases">Use cases</a>
+    <a href="#pricing">Pricing</a>
+  </div>
+  <a href="https://t.me/bkzd19" target="_blank" class="nav-early">Early access</a>
+  <button class="nav-burger" id="nav-burger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
+  <div class="nav-dropdown" id="nav-dropdown">
+    <a href="#quickstart">Quickstart</a><a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#use-cases">Use cases</a><a href="#pricing">Pricing</a>
+  </div>
+</nav>
 
     <section class="hero">
       <div class="hero-inner">
