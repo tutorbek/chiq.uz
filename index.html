@@ -152,38 +152,18 @@
   <div class="progress"></div>
   <main class="main" id="top">
     <nav class="nav" aria-label="Navigation">
-  <!-- Font yuklanishini kafolatlash uchun inline <link> tegi -->
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Knewave&display=swap" rel="stylesheet">
-
+  <!-- Google Fonts'dan Knewave fontini yuklash va logoga berish -->
   <style>
+    @import url('https://fonts.googleapis.com/css2?family=Knewave&display=swap');
     .nav-logo-custom {
-      font-family: 'Knewave', system-ui, -apple-system, sans-serif !important;
-      display: inline-flex;
-      align-items: baseline;
-    }
-    
-    .logo-i-wrapper {
-      position: relative;
-      display: inline-block;
-    }
-
-    /* To'q sariq nuqta */
-    .logo-i-wrapper::after {
-      content: ".";
-      position: absolute;
-      left: 50%;
-      top: -0.28em; 
-      transform: translateX(-50%);
-      color: #ff751f !important;
-      font-family: 'Knewave', sans-serif !important;
-      line-height: 1;
+      font-family: 'Knewave', system-ui, sans-serif !important;
+      /* Agar logoning o'lchami yoki ko'rinishini biroz moslash kerak bo'lsa, pastdagi qatorlarni ham ishlatsangiz bo'ladi: */
+      /* font-weight: 400; */
+      /* letter-spacing: 0.5px; */
     }
   </style>
 
-  <!-- ch, nuqtasiz ı va q harflari -->
-  <a class="nav-logo nav-logo-custom" href="#top">ch<span class="logo-i-wrapper">ı</span>q</a>
+  <a class="nav-logo nav-logo-custom" href="#top">chiq</a>
   
   <div class="nav-links">
     <a href="#quickstart">Quickstart</a>
