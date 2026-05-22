@@ -151,35 +151,33 @@
 <body>
   <div class="progress"></div>
   <main class="main" id="top">
-   <nav class="nav" aria-label="Navigation">
-  <!-- Google Fonts'dan Knewave fontini yuklash va logoga berish -->
+    <nav class="nav" aria-label="Navigation">
+  <!-- Font yuklanishini kafolatlash uchun inline <link> tegi -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Knewave&display=swap" rel="stylesheet">
+
   <style>
-   <nav class="nav" aria-label="Navigation">
-  <!-- Google Fonts'dan Knewave fontini yuklash va logoga berish -->
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Knewave&display=swap');
     .nav-logo-custom {
-      font-family: 'Knewave', system-ui, sans-serif !important;
+      font-family: 'Knewave', system-ui, -apple-system, sans-serif !important;
       display: inline-flex;
       align-items: baseline;
     }
     
-    /* i harfi uchun maxsus konteyner */
     .logo-i-wrapper {
       position: relative;
       display: inline-block;
     }
 
-    /* To'q sariq rangdagi yangi nuqta */
+    /* To'q sariq nuqta */
     .logo-i-wrapper::after {
       content: ".";
       position: absolute;
       left: 50%;
-      /* Knewave shriftidagi i harfining nuqta joylashuvini to'g'rilash */
       top: -0.28em; 
       transform: translateX(-50%);
       color: #ff751f !important;
-      font-family: 'Knewave', sans-serif;
+      font-family: 'Knewave', sans-serif !important;
       line-height: 1;
     }
   </style>
@@ -200,7 +198,6 @@
     <a href="#quickstart">Quickstart</a><a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#use-cases">Use cases</a><a href="#pricing">Pricing</a>
   </div>
 </nav>
-
     <section class="hero">
       <div class="hero-inner">
         <p class="kicker">Public tunnels for local work</p>
