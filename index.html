@@ -1,11 +1,13 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="chiq.uz creates public tunnels for localhost with request inspection, replay, HTTP and TCP forwarding, custom domains, and traffic controls.">
+  <meta name="description"
+    content="chiq.uz creates public tunnels for localhost with request inspection, replay, HTTP and TCP forwarding, custom domains, and traffic analytics.">
   <meta name="theme-color" content="#050505">
-  <title>chiq.uz - Connect Home Hosts to the Internet, Quickly.</title>
+  <title>chiq.uz - Connect Hosts to the Internet, Quickly.</title>
   <link rel="icon" href="favicons/favicon.ico?v=2" sizes="any">
   <link rel="icon" type="image/png" sizes="32x32" href="favicons/favicon-32x32.png?v=2">
   <link rel="icon" type="image/png" sizes="16x16" href="favicons/favicon-16x16.png?v=2">
@@ -13,229 +15,1375 @@
   <link rel="manifest" href="favicons/site.webmanifest?v=2">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@500;600;700&family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@500;700&family=Knewave&display=swap"
+    rel="stylesheet">
   <style>
-    *, *::before, *::after { box-sizing: border-box; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+    }
+
     :root {
-      --black: #050505;
-      --white: #FFFFFF;
-      --panel: #171717;
-      --radius: 8px;
+      --bg: #050505;
+      --surface: #0d0d0d;
+      --card: #171717;
+      --card-2: rgba(23, 23, 23, .72);
+      --line: rgba(255, 255, 255, .09);
+      --text: #FFFFFF;
+      --muted: rgba(255, 255, 255, .68);
+      --faint: rgba(255, 255, 255, .42);
       --green: #7CFFB2;
       --blue: #7CCBFF;
       --violet: #C9A3FF;
       --amber: #FFD36E;
       --red: #FF6B6B;
+      --radius: 22px;
+      --radius-sm: 14px;
+      --shadow: 0 30px 90px rgba(0, 0, 0, .42);
+      --ease-out: cubic-bezier(.23, 1, .32, 1);
+      --ease-in-out: cubic-bezier(.77, 0, .175, 1);
       --scroll: 0;
     }
-    html { background: var(--black); color: var(--white); scroll-behavior: smooth; }
-    body { margin: 0; min-width: 320px; background: var(--black); color: var(--white); font-family: Inter, system-ui, sans-serif; overflow-x: hidden; }
-    a { color: inherit; }
-    button { font: inherit; }
-    .progress { position: fixed; left: 0; top: 0; z-index: 50; width: calc(var(--scroll) * 100%); height: 2px; background: var(--white); pointer-events: none; }
-    .wrap { width: min(1120px, calc(100% - 44px)); margin: 0 auto; }
 
-    .nav { position: sticky; top: 16px; z-index: 30; width: max-content; max-width: calc(100% - 32px); min-height: 54px; margin: 16px auto 0; padding: 6px; display: flex; align-items: center; gap: 4px; border-radius: 999px; background: var(--panel); }
-    .nav a, .nav button { min-height: 38px; border: 0; border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; text-decoration: none; background: transparent; color: var(--white); white-space: nowrap; }
-    .nav-logo { padding: 0 18px; font-weight: 700; opacity: 1; }
-    .nav-links { display: flex; gap: 4px; }
-    .nav-links a { padding: 0 14px; opacity: .72; font-size: 13px; transition: opacity .2s ease; }
-    .nav-links a:hover { opacity: 1; }
-    .nav-early { padding: 0 16px; background: var(--white) !important; color: var(--black) !important; font-size: 13px; font-weight: 700; }
-    .nav-burger, .nav-dropdown { display: none; }
-
-    .hero { min-height: calc(100vh - 72px); display: grid; place-items: center; padding: 56px 22px 96px; text-align: center; }
-    .hero-inner { width: min(900px, 100%); }
-    .kicker, .mono-label { margin: 0; color: var(--white); font: 700 11px/1.2 "JetBrains Mono", monospace; letter-spacing: .24em; text-transform: uppercase; opacity: .82; }
-    h1, h2, h3 { color: var(--white); font-family: "Cormorant Garamond", Georgia, serif; font-weight: 600; letter-spacing: -.055em; }
-    h1 { margin: 18px 0 0; font-size: clamp(64px, 8.4vw, 120px); line-height: .84; text-wrap: balance; }
-    h2 { margin: 12px 0 0; font-size: clamp(46px, 6vw, 82px); line-height: .9; text-wrap: balance; }
-    h3 { margin: 0 0 12px; font-size: 32px; line-height: .96; }
-    .lead { width: min(720px, 100%); margin: 28px auto 34px; color: var(--white); opacity: .72; font-size: clamp(16px, 1.5vw, 20px); line-height: 1.65; text-wrap: balance; }
-    .actions { display: flex; justify-content: center; gap: 12px; flex-wrap: wrap; }
-    .btn { min-width: 150px; height: 42px; padding: 0 22px; border: 1px solid var(--white); border-radius: 999px; display: inline-flex; align-items: center; justify-content: center; background: var(--black); color: var(--white); text-decoration: none; font: 700 12px/1 "JetBrains Mono", monospace; letter-spacing: .08em; text-transform: uppercase; transition: background .2s ease, color .2s ease; }
-    .btn:hover { background: var(--white); color: var(--black); }
-
-    .section { padding: 104px 0; scroll-margin-top: 90px; }
-    .section.compact { padding-top: 72px; }
-    .section-head { display: grid; grid-template-columns: minmax(0, .75fr) minmax(280px, .42fr); gap: 48px; align-items: end; margin-bottom: 36px; }
-    .section-copy { margin: 0; color: var(--white); opacity: .68; line-height: 1.72; font-size: 16px; }
-    .panel, .note, .step, .control, .case, .price-copy, .price-aside, .faq-item { border-radius: var(--radius); background: var(--panel); color: var(--white); }
-
-    .quick-layout { display: grid; grid-template-columns: minmax(0, .86fr) minmax(340px, .62fr); gap: 18px; align-items: start; }
-    .cli-preview { overflow: hidden; border-radius: var(--radius); background: var(--panel); }
-    .cli-preview-bar { display: flex; gap: 6px; padding: 12px 16px; background: #111111; }
-    .cli-preview-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--white); opacity: .44; }
-    .cli-preview-body { padding: 22px 24px 26px; font: 600 13px/1.9 "JetBrains Mono", monospace; }
-    .prompt, .cmd, .code-command { color: var(--green); }
-    .label-line, .code-flag { color: var(--violet); display: inline-block; min-width: 96px; }
-    .val, .code-subcommand { color: var(--blue); }
-    .val-local, .code-value { color: var(--amber); }
-    .dim { opacity: .5; }
-    .steps { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; min-width: 0; }
-    .step { min-width: 0; min-height: 220px; max-width: 100%; padding: 24px; display: flex; flex-direction: column; }
-    .step-tag { width: max-content; max-width: 100%; margin-bottom: 14px; padding: 3px 10px; border-radius: 999px; font: 700 10px/1.6 "JetBrains Mono", monospace; letter-spacing: .1em; text-transform: uppercase; background: #232323; color: var(--green); }
-    .step h3 { font-family: Inter, system-ui, sans-serif; font-size: 16px; font-weight: 700; letter-spacing: 0; line-height: 1.3; }
-    .step p { margin: 0 0 16px; color: var(--white); opacity: .62; font-size: 14px; line-height: 1.55; }
-    .step-code { width: 100%; min-width: 0; margin-top: auto; padding: 10px 14px; border-radius: 8px; display: flex; align-items: center; gap: 8px; background: #0b0b0b; color: var(--green); font: 600 12.5px/1.4 "JetBrains Mono", monospace; overflow: hidden; }
-    .step-code code { flex: 1; min-width: 0; overflow-x: auto; overflow-y: hidden; white-space: nowrap; scrollbar-width: thin; }
-    .copy-btn { flex: 0 0 30px; width: 30px; height: 30px; border: 0; border-radius: 6px; display: grid; place-items: center; background: #171717; color: var(--white); cursor: pointer; opacity: .68; }
-    .copy-btn svg { width: 15px; height: 15px; }
-
-    .notes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
-    .note { min-height: 174px; padding: 22px; }
-    .note strong, .control strong { display: block; margin-bottom: 14px; font: 700 12px/1 "JetBrains Mono", monospace; letter-spacing: .12em; text-transform: uppercase; }
-    .note span, .control span { display: block; opacity: .68; font-size: 15px; line-height: 1.62; }
-
-    .workflow { display: grid; grid-template-columns: minmax(0, .9fr) minmax(320px, .72fr); gap: 28px; align-items: center; }
-    .terminal { padding: 24px; font: 600 13px/1.85 "JetBrains Mono", monospace; }
-    .terminal .key { display: inline-block; min-width: 64px; color: var(--violet); }
-    .terminal .url { color: var(--blue); }
-    .terminal .local, .request-row span:nth-child(2) { color: var(--amber); }
-    .terminal .policy { color: var(--violet); }
-    .request-row { display: grid; grid-template-columns: 58px 1fr 64px; gap: 12px; padding: 16px 18px; border-top: 1px solid var(--black); font: 700 12px/1.25 "JetBrains Mono", monospace; opacity: .78; }
-    .request-row.ok b, .request-row.ok span:last-child { color: var(--green); }
-    .request-row.redirect b, .request-row.redirect span:last-child { color: var(--blue); }
-    .request-row.live b, .request-row.live span:last-child { color: var(--violet); }
-    .request-row.error b, .request-row.error span:last-child { color: var(--red); }
-
-    .controls { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .control { min-height: 188px; padding: 24px; }
-    .use-cases { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
-    .case { min-height: 236px; padding: 24px; }
-    .case p { margin: 0; opacity: .66; line-height: 1.65; font-size: 14px; }
-    .price-card { display: grid; grid-template-columns: minmax(0, .78fr) minmax(280px, .38fr); gap: 14px; }
-    .price-copy, .price-aside { padding: 30px; }
-    .price-copy p, .final p { margin: 0; opacity: .68; line-height: 1.72; }
-    .price-aside ul { list-style: none; padding: 0; margin: 18px 0 0; display: grid; gap: 12px; opacity: .72; font-size: 14px; }
-    .price-aside li::before { content: "+ "; font-family: "JetBrains Mono", monospace; font-weight: 700; }
-    .faq { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
-    .faq-item { padding: 20px; }
-    .faq-item h3 { margin: 0 0 9px; font-family: Inter, system-ui, sans-serif; font-size: 16px; letter-spacing: 0; }
-    .faq-item p { margin: 0; opacity: .66; line-height: 1.65; font-size: 14px; }
-    .final { min-height: 68vh; display: grid; place-items: center; text-align: center; padding: 110px 0; }
-    .final h2 { width: min(780px, 100%); margin-inline: auto; }
-    .final p { width: min(590px, 100%); margin: 24px auto 32px; }
-    footer { padding: 26px 0; }
-    .footer-inner { display: flex; justify-content: space-between; gap: 18px; opacity: .56; font-size: 13px; }
-    [data-reveal] { opacity: 0; transform: translateY(26px); transition: opacity .7s ease, transform .7s ease; }
-    [data-reveal].visible { opacity: 1; transform: translateY(0); }
-
-    @media (max-width: 960px) {
-      .nav { top: 10px; width: calc(100% - 28px); min-height: 50px; justify-content: space-between; }
-      .nav-links { display: none; }
-      .nav-burger { width: 38px; height: 38px; border: 0; border-radius: 50%; display: grid; place-items: center; background: #242424; cursor: pointer; }
-      .nav-burger span { width: 18px; height: 1.5px; margin: 2px 0; display: block; background: var(--white); border-radius: 2px; }
-      .nav-dropdown { position: absolute; top: calc(100% + 8px); left: 0; right: 0; padding: 8px; border-radius: 16px; display: none; background: var(--panel); }
-      .nav-dropdown.open { display: block; }
-      .nav-dropdown a { min-height: 46px; padding: 0 18px; border-radius: 10px; display: flex; align-items: center; text-decoration: none; opacity: .82; }
-      .hero { min-height: calc(100vh - 96px); padding: 44px 18px 70px; }
-      .section { padding: 78px 0; }
-      .section-head, .workflow, .quick-layout, .price-card { grid-template-columns: 1fr; }
-      .notes, .controls, .use-cases, .steps, .faq { grid-template-columns: 1fr; }
+    html {
+      background: var(--bg);
+      color: var(--text);
+      scroll-behavior: smooth;
+      scroll-padding-top: 96px;
+      -webkit-text-size-adjust: 100%;
     }
-    @media (max-width: 620px) {
-      .wrap { width: min(100% - 36px, 1120px); }
-      h1 { font-size: clamp(58px, 17vw, 84px); }
-      .actions .btn { width: 100%; max-width: 320px; }
-      .step, .note, .control, .case, .price-copy, .price-aside, .faq-item { padding: 22px; }
-      .step { width: 100%; min-height: 220px; }
-      .terminal { padding: 22px; }
-      .request-row { grid-template-columns: 48px 1fr; }
-      .request-row span:last-child { display: none; }
-      .footer-inner { flex-direction: column; }
+
+    body {
+      margin: 0;
+      min-width: 320px;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, system-ui, sans-serif;
+      overflow-x: hidden;
+      overscroll-behavior-y: none;
+      text-rendering: optimizeLegibility;
+      -webkit-font-smoothing: antialiased;
     }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation-duration: .01ms !important; transition-duration: .01ms !important; scroll-behavior: auto !important; } }
+
+    body::before {
+      content: "";
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: -2;
+      background: linear-gradient(rgba(255, 255, 255, .026) 1px, transparent 1px), linear-gradient(90deg, rgba(255, 255, 255, .026) 1px, transparent 1px);
+      background-size: 72px 72px;
+      mask-image: linear-gradient(to bottom, rgba(0, 0, 0, .9), transparent 74%);
+      pointer-events: none;
+    }
+
+    body::after {
+      content: "";
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: -1;
+      background: radial-gradient(circle at 78% 12%, rgba(255, 255, 255, .07), transparent 24%), radial-gradient(circle at 18% 8%, rgba(255, 255, 255, .045), transparent 22%);
+      pointer-events: none;
+    }
+
+    a {
+      color: inherit;
+    }
+
+    button {
+      font: inherit;
+    }
+
+    .progress {
+      position: fixed;
+      inset: 0 auto auto 0;
+      z-index: 80;
+      width: 100%;
+      height: 2px;
+      background: var(--text);
+      pointer-events: none;
+      transform: scaleX(var(--scroll));
+      transform-origin: left center;
+      will-change: transform;
+    }
+
+    .container {
+      width: min(1240px, calc(100% - 48px));
+      margin: 0 auto;
+    }
+
+    .nav {
+      position: sticky;
+      top: 16px;
+      z-index: 70;
+      width: min(980px, calc(100% - 32px));
+      min-height: 58px;
+      margin: 16px auto 0;
+      padding: 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(23, 23, 23, .7);
+      box-shadow: 0 18px 70px rgba(0, 0, 0, .44);
+    }
+
+    .logo {
+      min-height: 40px;
+      padding: 0 18px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      font-family: Knewave, Inter, sans-serif;
+      font-size: 30px;
+      line-height: 1;
+      letter-spacing: .01em;
+    }
+
+    .nav-links {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 2px;
+    }
+
+    .nav-links a {
+      min-height: 40px;
+      padding: 0 13px;
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      text-decoration: none;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 700;
+      transition: color 160ms var(--ease-out), background 160ms var(--ease-out);
+    }
+
+    .nav-links a:hover {
+      color: var(--text);
+      background: rgba(255, 255, 255, .06);
+    }
+
+    .btn {
+      min-height: 44px;
+      padding: 0 20px;
+      border: 1px solid rgba(255, 255, 255, .42);
+      border-radius: 999px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: transparent;
+      color: var(--text);
+      text-decoration: none;
+      font: 800 12px/1 "JetBrains Mono", monospace;
+      letter-spacing: .08em;
+      text-transform: uppercase;
+      transition: transform 140ms var(--ease-out), background 180ms var(--ease-out), color 180ms var(--ease-out), border-color 180ms var(--ease-out);
+    }
+
+    .btn.primary {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .btn:hover {
+      background: var(--text);
+      color: var(--bg);
+      border-color: var(--text);
+    }
+
+    .btn:active,
+    .copy-btn:active,
+    .menu-btn:active {
+      transform: scale(.97);
+    }
+
+    .nav-cta {
+      margin-left: 4px;
+      min-height: 40px;
+      padding-inline: 17px;
+    }
+
+    .menu-btn,
+    .mobile-menu {
+      display: none;
+    }
+
+    .hero {
+      min-height: calc(100vh - 82px);
+      padding: clamp(58px, 8vw, 104px) 0 clamp(70px, 9vw, 116px);
+      display: grid;
+      grid-template-columns: minmax(0, .96fr) minmax(420px, .84fr);
+      gap: 34px;
+      align-items: center;
+    }
+
+    .eyebrow,
+    .section-label {
+      margin: 0;
+      color: var(--text);
+      font: 800 11px/1.2 "JetBrains Mono", monospace;
+      letter-spacing: .22em;
+      text-transform: uppercase;
+      opacity: .76;
+    }
+
+    h1,
+    h2,
+    h3,
+    p {
+      margin-top: 0;
+    }
+
+    h1 {
+      max-width: 720px;
+      margin-bottom: 24px;
+      font-size: clamp(50px, 6.8vw, 88px);
+      line-height: .9;
+      letter-spacing: -.075em;
+      text-wrap: balance;
+    }
+
+    h2 {
+      margin: 12px 0 0;
+      font-size: clamp(42px, 5.6vw, 78px);
+      line-height: .94;
+      letter-spacing: -.06em;
+      text-wrap: balance;
+    }
+
+    h3 {
+      margin-bottom: 10px;
+      font-size: 19px;
+      line-height: 1.2;
+      letter-spacing: -.025em;
+    }
+
+    .lead {
+      max-width: 620px;
+      margin-bottom: 28px;
+      color: var(--muted);
+      font-size: clamp(17px, 1.7vw, 22px);
+      line-height: 1.62;
+      text-wrap: balance;
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .hero-proof {
+      margin-top: 28px;
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+      max-width: 560px;
+    }
+
+    .proof {
+      padding: 14px 16px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius-sm);
+      background: rgba(23, 23, 23, .54);
+    }
+
+    .proof strong {
+      display: block;
+      margin-bottom: 5px;
+      font-size: 20px;
+      letter-spacing: -.03em;
+    }
+
+    .proof span {
+      color: var(--faint);
+      font-size: 12px;
+    }
+
+    .hero-stack {
+      display: grid;
+      gap: 16px;
+      min-width: 0;
+    }
+
+    .panel,
+    .metric,
+    .card,
+    .command-card,
+    .price-panel,
+    .faq details {
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: var(--card-2);
+      box-shadow: 0 22px 70px rgba(0, 0, 0, .28);
+      backface-visibility: hidden;
+      contain: layout paint;
+    }
+
+    .terminal-panel {
+      overflow: hidden;
+      box-shadow: var(--shadow);
+    }
+
+    .panel-bar {
+      min-height: 42px;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .065);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(255, 255, 255, .025);
+    }
+
+    .dots {
+      display: flex;
+      gap: 7px;
+    }
+
+    .dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--text);
+      opacity: .34;
+    }
+
+    .panel-title {
+      color: var(--faint);
+      font: 800 10px/1 "JetBrains Mono", monospace;
+      letter-spacing: .13em;
+      text-transform: uppercase;
+    }
+
+    .terminal-body {
+      height: 232px;
+      padding: 24px;
+      font: 700 13px/1.9 "JetBrains Mono", monospace;
+      overflow-x: auto;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .green {
+      color: var(--green);
+    }
+
+    .blue {
+      color: var(--blue);
+    }
+
+    .violet {
+      color: var(--violet);
+    }
+
+    .amber {
+      color: var(--amber);
+    }
+
+    .red {
+      color: var(--red);
+    }
+
+    .cursor {
+      animation: none;
+    }
+
+    .inspector {
+      overflow: hidden;
+    }
+
+    .inspector-head {
+      min-height: 44px;
+      padding: 0 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .065);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .live {
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(124, 255, 178, .12);
+      color: var(--green);
+      font: 800 10px/1 "JetBrains Mono", monospace;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+    }
+
+    .logs {
+      height: 260px;
+      padding: 10px;
+      display: grid;
+      gap: 8px;
+      overflow: hidden;
+    }
+
+    .log {
+      display: grid;
+      grid-template-columns: 54px 1fr 54px;
+      gap: 10px;
+      align-items: center;
+      padding: 12px 14px;
+      border-radius: 12px;
+      background: rgba(5, 5, 5, .64);
+      font: 800 12px/1.2 "JetBrains Mono", monospace;
+    }
+
+    .log span:nth-child(2) {
+      min-width: 0;
+      overflow: hidden;
+      color: var(--amber);
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .log span:last-child {
+      text-align: right;
+      color: var(--faint);
+    }
+
+    .section {
+      padding: clamp(76px, 9vw, 116px) 0;
+      scroll-margin-top: 96px;
+    }
+
+    .section-head {
+      margin-bottom: 28px;
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(280px, .45fr);
+      gap: 42px;
+      align-items: end;
+    }
+
+    .section-copy {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.72;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+      margin-bottom: 16px;
+    }
+
+    .metric {
+      padding: 20px;
+    }
+
+    .metric span {
+      color: var(--faint);
+      font-size: 13px;
+    }
+
+    .metric strong {
+      display: block;
+      margin-top: 8px;
+      font-size: clamp(28px, 3.4vw, 42px);
+      line-height: 1;
+      letter-spacing: -.06em;
+    }
+
+    .analytics-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
+      gap: 16px;
+    }
+
+    .card {
+      padding: 24px;
+      min-width: 0;
+    }
+
+    .activity-list {
+      display: grid;
+      gap: 8px;
+    }
+
+    .activity-list .log {
+      background: rgba(5, 5, 5, .72);
+    }
+
+    .chart {
+      min-height: 320px;
+      overflow: hidden;
+    }
+
+    .chart-top {
+      margin-bottom: 18px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: flex-start;
+    }
+
+    .chart svg {
+      width: 100%;
+      height: 230px;
+      display: block;
+    }
+
+    .chart-grid line {
+      stroke: rgba(255, 255, 255, .07);
+    }
+
+    .chart-line {
+      fill: none;
+      stroke: var(--blue);
+      stroke-width: 4;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .feature-card {
+      min-height: 184px;
+      padding: 24px;
+      transition: transform 180ms var(--ease-out), border-color 180ms var(--ease-out);
+    }
+
+    .feature-card:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, .16);
+    }
+
+    .feature-card b {
+      display: inline-flex;
+      margin-bottom: 24px;
+      color: var(--green);
+      font: 800 11px/1 "JetBrains Mono", monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    .feature-card:nth-child(2) b,
+    .feature-card:nth-child(6) b {
+      color: var(--blue);
+    }
+
+    .feature-card:nth-child(3) b,
+    .feature-card:nth-child(5) b {
+      color: var(--violet);
+    }
+
+    .feature-card p {
+      margin: 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-size: 14px;
+    }
+
+    .commands {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .command-card {
+      min-width: 0;
+      min-height: 192px;
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .command-card p {
+      margin-bottom: 16px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .code-row {
+      margin-top: auto;
+      padding: 11px 12px;
+      border-radius: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(5, 5, 5, .76);
+      color: var(--green);
+      font: 800 12px/1.4 "JetBrains Mono", monospace;
+      overflow: hidden;
+    }
+
+    .code-row code {
+      flex: 1;
+      min-width: 0;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: thin;
+    }
+
+    .copy-btn {
+      flex: 0 0 30px;
+      width: 30px;
+      height: 30px;
+      border: 1px solid rgba(255, 255, 255, .06);
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      background: rgba(255, 255, 255, .055);
+      color: var(--text);
+      cursor: pointer;
+      opacity: .74;
+      transition: opacity 160ms var(--ease-out), background 160ms var(--ease-out), transform 140ms var(--ease-out);
+    }
+
+    .copy-btn:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, .1);
+    }
+
+    .price-grid {
+      display: grid;
+      grid-template-columns: minmax(0, .9fr) minmax(320px, .72fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .price-panel {
+      padding: 28px;
+    }
+
+    .price-panel p {
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+      border-radius: var(--radius);
+    }
+
+    table {
+      width: 100%;
+      min-width: 520px;
+      border-collapse: collapse;
+      font-size: 14px;
+    }
+
+    th,
+    td {
+      padding: 16px;
+      border-bottom: 1px solid rgba(255, 255, 255, .075);
+      text-align: left;
+    }
+
+    th {
+      color: var(--faint);
+      font: 800 11px/1 "JetBrains Mono", monospace;
+      letter-spacing: .12em;
+      text-transform: uppercase;
+    }
+
+    td:not(:first-child) {
+      font-weight: 800;
+    }
+
+    tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .yes {
+      color: var(--green);
+    }
+
+    .soon {
+      color: var(--blue);
+    }
+
+    .dash {
+      color: var(--faint);
+    }
+
+    .faq {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+    }
+
+    .faq details {
+      padding: 18px 20px;
+    }
+
+    .faq summary {
+      cursor: pointer;
+      font-weight: 800;
+      list-style: none;
+    }
+
+    .faq summary::-webkit-details-marker {
+      display: none;
+    }
+
+    .faq summary::after {
+      content: "+";
+      float: right;
+      color: var(--faint);
+      font-family: "JetBrains Mono", monospace;
+    }
+
+    .faq details[open] summary::after {
+      content: "-";
+    }
+
+    .faq p {
+      margin: 14px 0 0;
+      color: var(--muted);
+      line-height: 1.62;
+      font-size: 14px;
+    }
+
+    .final {
+      min-height: 58vh;
+      display: grid;
+      place-items: center;
+      text-align: center;
+    }
+
+    .final-inner {
+      width: min(760px, 100%);
+      margin: 0 auto;
+    }
+
+    .final p {
+      margin: 22px auto 30px;
+      max-width: 580px;
+      color: var(--muted);
+      line-height: 1.7;
+    }
+
+    footer {
+      padding: 42px 0 34px;
+      border-top: 1px solid var(--line);
+    }
+
+    .footer-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(120px, .6fr));
+      gap: 22px;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .footer-grid b {
+      color: var(--text);
+    }
+
+    .footer-grid p {
+      margin: 10px 0 0;
+    }
+
+    .reveal {
+      opacity: 1;
+      transform: none;
+      transition: none;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: none;
+    }
+
+    @media (max-width: 1060px) {
+
+      .hero,
+      .section-head,
+      .analytics-grid,
+      .price-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .hero {
+        min-height: auto;
+      }
+
+      .hero-copy {
+        text-align: center;
+      }
+
+      .hero-actions,
+      .hero-proof {
+        justify-content: center;
+        margin-inline: auto;
+      }
+
+      .metrics,
+      .commands {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+    }
+
+    @media (max-width: 820px) {
+      .container {
+        width: min(100% - 34px, 1240px);
+      }
+
+      .nav {
+        top: 10px;
+        width: calc(100% - 24px);
+        min-height: 54px;
+        margin-top: 10px;
+      }
+
+      .logo {
+        padding-inline: 13px;
+        font-size: 28px;
+      }
+
+      .nav-links {
+        display: none;
+      }
+
+      .nav-cta {
+        margin-left: auto;
+        min-height: 38px;
+        padding-inline: 14px;
+        font-size: 11px;
+      }
+
+      .menu-btn {
+        width: 38px;
+        height: 38px;
+        border: 0;
+        border-radius: 999px;
+        display: inline-flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 4px;
+        background: transparent;
+        color: var(--text);
+        cursor: pointer;
+      }
+
+      .menu-btn span {
+        width: 18px;
+        height: 1.5px;
+        border-radius: 2px;
+        background: currentColor;
+        transition: transform 180ms var(--ease-out), opacity 180ms var(--ease-out);
+      }
+
+      .menu-btn.open span:nth-child(1) {
+        transform: translateY(5.5px) rotate(45deg);
+      }
+
+      .menu-btn.open span:nth-child(2) {
+        opacity: 0;
+      }
+
+      .menu-btn.open span:nth-child(3) {
+        transform: translateY(-5.5px) rotate(-45deg);
+      }
+
+      .mobile-menu {
+        position: absolute;
+        top: calc(100% + 8px);
+        left: 0;
+        right: 0;
+        padding: 8px;
+        border: 1px solid var(--line);
+        border-radius: 20px;
+        display: grid;
+        background: rgba(23, 23, 23, .94);
+        box-shadow: var(--shadow);
+        opacity: 0;
+        transform: translateY(-6px) scale(.98);
+        transform-origin: top center;
+        pointer-events: none;
+        transition: opacity 170ms var(--ease-out), transform 170ms var(--ease-out);
+      }
+
+      .mobile-menu.open {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+        pointer-events: auto;
+      }
+
+      .mobile-menu a {
+        min-height: 46px;
+        padding: 0 16px;
+        border-radius: 13px;
+        display: flex;
+        align-items: center;
+        text-decoration: none;
+        color: var(--muted);
+        font-size: 14px;
+        font-weight: 700;
+      }
+
+      .mobile-menu a:hover {
+        color: var(--text);
+        background: rgba(255, 255, 255, .06);
+      }
+
+      .hero {
+        padding: 58px 0 72px;
+      }
+
+      h1 {
+        font-size: clamp(44px, 12.4vw, 68px);
+      }
+
+      .hero-proof,
+      .feature-grid,
+      .metrics,
+      .commands,
+      .faq {
+        grid-template-columns: 1fr;
+      }
+
+      .hero-stack {
+        gap: 12px;
+      }
+
+      .panel,
+      .metric,
+      .card,
+      .command-card,
+      .price-panel,
+      .faq details {
+        border-radius: 18px;
+        box-shadow: 0 14px 42px rgba(0, 0, 0, .28);
+      }
+
+      .nav {
+        box-shadow: 0 14px 44px rgba(0, 0, 0, .36);
+      }
+
+      body::before {
+        background-size: 88px 88px;
+        opacity: .72;
+      }
+
+      body::after {
+        opacity: .66;
+      }
+
+      .feature-card,
+      .command-card {
+        min-height: auto;
+      }
+
+      .log {
+        grid-template-columns: 46px 1fr;
+      }
+
+      .log span:last-child {
+        display: none;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .container {
+        width: min(100% - 28px, 1240px);
+      }
+
+      .hero-actions .btn {
+        width: 100%;
+      }
+
+      .terminal-body {
+        padding: 18px;
+        font-size: 12px;
+      }
+
+      .card,
+      .metric,
+      .feature-card,
+      .command-card,
+      .price-panel {
+        padding: 20px;
+      }
+
+      .chart svg {
+        height: 200px;
+      }
+
+      .footer-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+
+      *,
+      *::before,
+      *::after {
+        animation-duration: .01ms !important;
+        transition-duration: .01ms !important;
+        scroll-behavior: auto !important;
+      }
+    }
   </style>
 </head>
+
 <body>
   <div class="progress"></div>
-  <main class="main" id="top">
-    <nav class="nav" aria-label="Navigation">
-  <!-- Google Fonts'dan Knewave fontini yuklash va logoga berish -->
-  <style>
-    @import url('https://fonts.googleapis.com/css2?family=Knewave&display=swap');
-    .nav-logo-custom {
-      font-family: 'Knewave', system-ui, sans-serif !important;
-      /* Agar logoning o'lchami yoki ko'rinishini biroz moslash kerak bo'lsa, pastdagi qatorlarni ham ishlatsangiz bo'ladi: */
-      /* font-weight: 400; */
-      /* letter-spacing: 0.5px; */
-    }
-  </style>
+  <nav class="nav" aria-label="Navigation">
+    <a class="logo" href="#top">chiq</a>
+    <div class="nav-links">
+      <a href="#analytics">Analytics</a>
+      <a href="#features">Features</a>
+      <a href="#cli">CLI</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+    <a class="btn primary nav-cta" href="https://t.me/bkzd19" target="_blank">Early Access</a>
+    <button class="menu-btn" id="menu-btn" aria-label="Toggle menu"
+      aria-expanded="false"><span></span><span></span><span></span></button>
+    <div class="mobile-menu" id="mobile-menu">
+      <a href="#analytics">Analytics</a>
+      <a href="#features">Features</a>
+      <a href="#cli">CLI</a>
+      <a href="#pricing">Pricing</a>
+      <a href="#faq">FAQ</a>
+    </div>
+  </nav>
 
-  <a class="nav-logo nav-logo-custom" href="#top">chiq</a>
-  
-  <div class="nav-links">
-    <a href="#quickstart">Quickstart</a>
-    <a href="#features">Features</a>
-    <a href="#workflow">Workflow</a>
-    <a href="#use-cases">Use cases</a>
-    <a href="#pricing">Pricing</a>
-  </div>
-  <a href="https://t.me/bkzd19" target="_blank" class="nav-early">Early access</a>
-  <button class="nav-burger" id="nav-burger" aria-label="Toggle menu"><span></span><span></span><span></span></button>
-  <div class="nav-dropdown" id="nav-dropdown">
-    <a href="#quickstart">Quickstart</a><a href="#features">Features</a><a href="#workflow">Workflow</a><a href="#use-cases">Use cases</a><a href="#pricing">Pricing</a>
-  </div>
-</nav>
-    <section class="hero">
-      <div class="hero-inner">
-        <p class="kicker">Public tunnels for local work</p>
-        <h1>Connect Hosts to the Internet, Quickly</h1>
-        <p class="lead">Share local services instantly with a public URL.
-  Debug webhooks, inspect requests, and test integrations from anywhere.</p>
-        <div class="actions"><a class="btn" target="_blank" href="https://t.me/bkzd19">Early access</a><a class="btn" href="#quickstart">Show CLI</a></div>
-      </div>
-    </section>
-
-    <section class="section" id="quickstart" data-section>
-      <div class="wrap quick-layout">
-        <div>
-          <span class="mono-label">Getting started</span>
-          <h2>Up and running in seconds.</h2>
-          <p class="section-copy">One install, one login. Tunnel HTTP, TCP, static files, readable subdomains, and custom domains straight from your terminal.</p>
+  <main id="top">
+    <div class="container">
+      <section class="hero">
+        <div class="hero-copy">
+          <p class="eyebrow">Public tunnels for local work</p>
+          <h1>Connect Hosts to Internet, Quickly.</h1>
+          <p class="lead">Built for developers who want to share localhost instantly. No deployment, no DNS setup, no
+            infrastructure ceremony.</p>
+          <div class="hero-actions">
+            <a class="btn primary" href="https://t.me/bkzd19" target="_blank">Get Early Access</a>
+            <a class="btn" href="#cli">View CLI</a>
+          </div>
+          <div class="hero-proof" aria-label="Product highlights">
+            <div class="proof"><strong>HTTP</strong><span>Public URLs for local ports</span></div>
+            <div class="proof"><strong>TCP</strong><span>SSH, databases, sockets</span></div>
+            <div class="proof"><strong>Replay</strong><span>Fix and resend requests</span></div>
+          </div>
         </div>
-        <div class="cli-preview" data-reveal>
-          <div class="cli-preview-bar"><span class="cli-preview-dot"></span><span class="cli-preview-dot"></span><span class="cli-preview-dot"></span></div>
-          <div class="cli-preview-body"><div><b class="prompt">$</b> <span class="cmd">chiq http 3000</span></div><div class="dim">chiq 1.0 - press Ctrl+C to quit</div><br><div><span class="label-line">Status:</span> <span class="val">Online</span></div><div><span class="label-line">Protocol:</span> <span class="val">HTTP</span></div><div><span class="label-line">Forwarded:</span> <span class="val">app.chiq.uz</span> -> <span class="val-local">127.0.0.1:3000</span></div></div>
+
+        <div class="hero-stack">
+          <div class="panel terminal-panel reveal">
+            <div class="panel-bar">
+              <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span
+                class="panel-title">Tunnel session</span>
+            </div>
+            <div class="terminal-body" id="terminal"><span class="green">$</span> chiq http 3000 --inspect
+
+              <span class="violet">Public URL</span>
+              <span class="blue">https://demo.chiq.uz</span>
+
+              <span class="amber">localhost:3000</span><span class="cursor">▋</span>
+            </div>
+          </div>
+          <div class="panel inspector reveal">
+            <div class="inspector-head"><span class="panel-title">Request inspector</span><span class="live">Live</span>
+            </div>
+            <div class="logs" id="logs">
+              <div class="log"><span class="green">200</span><span>POST /webhooks/order.created</span><span>47ms</span>
+              </div>
+              <div class="log"><span class="green">200</span><span>POST /telegram/update</span><span>24ms</span></div>
+              <div class="log"><span class="red">500</span><span>POST /webhooks/retry-me</span><span>91ms</span></div>
+              <div class="log"><span class="violet">101</span><span>TCP /ssh-forward</span><span>live</span></div>
+            </div>
+          </div>
         </div>
-      </div>
-      <div class="wrap" style="margin-top:18px"><div class="steps">
-        <div class="step" data-reveal><span class="step-tag">Install</span><h3>Install chiq CLI</h3><p>Install the CLI from the official install script.</p><div class="step-code"><code>curl -fsSL https://chiq.uz/install.sh | sudo bash</code><button class="copy-btn" data-copy="curl -fsSL https://chiq.uz/install.sh | sudo bash" aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">Authenticate</span><h3>Connect your token</h3><p>Obtain an auth token from chiq.uz/auth, then authenticate.</p><div class="step-code"><code>chiq auth &lt;your-auth-token&gt;</code><button class="copy-btn" data-copy="chiq auth <your-auth-token>" aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">HTTP</span><h3>Start an HTTP tunnel</h3><p>Replace 3000 with the local port you want to expose.</p><div class="step-code"><code>chiq http 3000</code><button class="copy-btn" data-copy="chiq http 3000" aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">TCP</span><h3>Start a TCP tunnel</h3><p>Expose SSH, databases, sockets, or internal tools.</p><div class="step-code"><code>chiq tcp 22</code><button class="copy-btn" data-copy="chiq tcp 22" aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">Subdomain</span><h3>Reserve a readable URL</h3><p>Use a stable subdomain for repeated callbacks.</p><div class="step-code"><code>chiq http 3000 -s custom</code><button class="copy-btn" data-copy="chiq http 3000 -s custom" aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">Static files</span><h3>Serve a directory</h3><p>Publish a local folder through the built-in server.</p><div class="step-code"><code>chiq serve .</code><button class="copy-btn" data-copy="chiq serve ." aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">Debug</span><h3>Open the tunnel debugger</h3><p>Start an HTTP tunnel with live request inspection.</p><div class="step-code"><code>chiq http 3000 --debug</code><button class="copy-btn" data-copy="chiq http 3000 --debug" aria-label="Copy command">⧉</button></div></div>
-        <div class="step" data-reveal><span class="step-tag">CNAME</span><h3>Use your own domain</h3><p>Point your domain CNAME, then start the tunnel.</p><div class="step-code"><code>chiq http 3000 --cname example.com</code><button class="copy-btn" data-copy="chiq http 3000 --cname example.com" aria-label="Copy command">⧉</button></div></div>
-      </div></div>
-    </section>
+      </section>
 
-    <section class="section compact" id="features" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">Core features</span><h2>Expose, inspect, control.</h2></div><p class="section-copy">A focused tunnel workflow: public endpoints, live request context, replay, reserved names, custom domains, and HTTP or TCP forwarding.</p></div><div class="notes"><div class="note" data-reveal><strong>Public endpoints</strong><span>Turn a local port into a reachable HTTPS URL for demos, callbacks, previews, and test environments.</span></div><div class="note" data-reveal><strong>Traffic inspector</strong><span>Read method, route, status, latency, headers, response, and body without leaving your development flow.</span></div><div class="note" data-reveal><strong>Any local service</strong><span>Forward web apps, APIs, webhooks, SSH, databases, WebSockets, queues, and other TCP services.</span></div></div></div></section>
+      <section class="section reveal" id="analytics">
+        <div class="section-head">
+          <div>
+            <p class="section-label">Traffic analytics</p>
+            <h2>See what your tunnel is doing.</h2>
+          </div>
+          <p class="section-copy">Preview requests as they arrive, compare success and failure, and keep latency visible
+            while you test integrations.</p>
+        </div>
+        <div class="metrics">
+          <div class="metric"><span>Requests</span><strong>14.2k</strong></div>
+          <div class="metric"><span>Success rate</span><strong>99.8%</strong></div>
+          <div class="metric"><span>Avg latency</span><strong>42ms</strong></div>
+          <div class="metric"><span>Bandwidth</span><strong>1.8GB</strong></div>
+        </div>
+        <div class="analytics-grid">
+          <div class="card">
+            <h3>Live activity</h3>
+            <div class="activity-list">
+              <div class="log"><span class="green">200</span><span>POST /stripe/webhook</span><span>31ms</span></div>
+              <div class="log"><span class="green">200</span><span>POST /telegram/update</span><span>18ms</span></div>
+              <div class="log"><span class="blue">302</span><span>GET /oauth/callback</span><span>9ms</span></div>
+              <div class="log"><span class="violet">101</span><span>TCP /ssh</span><span>live</span></div>
+              <div class="log"><span class="red">500</span><span>POST /retry-me</span><span>91ms</span></div>
+            </div>
+          </div>
+          <div class="card chart">
+            <div class="chart-top">
+              <div>
+                <h3>Requests / minute</h3>
+                <p class="section-copy">A compact view for spikes, callbacks, and retry storms.</p>
+              </div><span class="live">Streaming</span>
+            </div>
+            <svg viewBox="0 0 800 260" role="img" aria-label="Requests per minute chart">
+              <g class="chart-grid">
+                <line x1="0" y1="40" x2="800" y2="40"></line>
+                <line x1="0" y1="100" x2="800" y2="100"></line>
+                <line x1="0" y1="160" x2="800" y2="160"></line>
+                <line x1="0" y1="220" x2="800" y2="220"></line>
+              </g>
+              <polyline class="chart-line"
+                points="0,190 80,154 160,168 240,112 320,132 400,72 480,96 560,42 640,92 720,62 800,24"></polyline>
+            </svg>
+          </div>
+        </div>
+      </section>
 
-    <section class="section" id="workflow" data-section><div class="wrap workflow"><div data-reveal><span class="mono-label">Workflow</span><h2>Terminal speed. Dashboard memory.</h2><p class="section-copy">Start from the CLI when you need speed. Keep session history when you need answers: what failed, what arrived, which route was slow, and what should be replayed.</p></div><div class="panel" data-reveal><div class="terminal"><div><b class="prompt">$</b> <span class="cmd">chiq http 4242 --name webhooks</span></div><div><span class="key">public</span> <span class="url">https://webhooks.chiq.uz</span></div><div><span class="key">local</span> <span class="local">localhost:4242</span></div><div><span class="key">policy</span> <span class="policy">auth, replay, request log</span></div></div><div class="request-list"><div class="request-row ok"><b>200</b><span>POST /webhooks/order.created</span><span>47ms</span></div><div class="request-row redirect"><b>302</b><span>GET /oauth/callback</span><span>18ms</span></div><div class="request-row live"><b>101</b><span>TCP / ssh-forward</span><span>live</span></div><div class="request-row error"><b>500</b><span>POST /webhooks/retry-me</span><span>91ms</span></div></div></div></div></section>
+      <section class="section reveal" id="features">
+        <div class="section-head">
+          <div>
+            <p class="section-label">Features</p>
+            <h2>Everything local work needs.</h2>
+          </div>
+          <p class="section-copy">Small feature surface, sharp execution: tunnel, inspect, replay, reserve, and forward
+            without leaving development mode.</p>
+        </div>
+        <div class="feature-grid">
+          <div class="card feature-card"><b>HTTP</b>
+            <h3>HTTP tunnels</h3>
+            <p>Expose local web apps, APIs, and callbacks through a public HTTPS endpoint.</p>
+          </div>
+          <div class="card feature-card"><b>TCP</b>
+            <h3>TCP forwarding</h3>
+            <p>Forward SSH, databases, sockets, queues, and internal tools through a stable tunnel.</p>
+          </div>
+          <div class="card feature-card"><b>Replay</b>
+            <h3>Request replay</h3>
+            <p>Capture failed requests, fix your handler, then send the exact payload again.</p>
+          </div>
+          <div class="card feature-card"><b>Domains</b>
+            <h3>Custom domains</h3>
+            <p>Use your own domain for demos, client previews, and long-running integrations.</p>
+          </div>
+          <div class="card feature-card"><b>Names</b>
+            <h3>Reserved subdomains</h3>
+            <p>Keep readable URLs for repeated webhook testing and shared team workflows.</p>
+          </div>
+          <div class="card feature-card"><b>Inspect</b>
+            <h3>Request inspection</h3>
+            <p>Read method, route, status, latency, headers, response, and body in one place.</p>
+          </div>
+        </div>
+      </section>
 
-    <section class="section" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">Traffic controls</span><h2>Rules before traffic reaches your code.</h2></div><p class="section-copy">Public does not have to mean uncontrolled. Attach simple policies to keep local services reachable only in the way you intended.</p></div><div class="controls"><div class="control" data-reveal><strong>Access guard</strong><span>Protect previews with tokens, basic auth, or allowed client ranges.</span></div><div class="control" data-reveal><strong>Route shaping</strong><span>Rewrite paths, add headers, redirect requests, or split traffic.</span></div><div class="control" data-reveal><strong>Replay loop</strong><span>Save a failed webhook, fix the handler, then send the exact request again.</span></div><div class="control" data-reveal><strong>Stable identity</strong><span>Use reserved subdomains and custom domains when one address must not change.</span></div></div></div></section>
+      <section class="section reveal" id="cli">
+        <div class="section-head">
+          <div>
+            <p class="section-label">CLI</p>
+            <h2>Commands that stay out of the way.</h2>
+          </div>
+          <p class="section-copy">A CLI-first workflow for developers who want quick commands, readable output, and no
+            extra setup.</p>
+        </div>
+        <div class="commands">
+          <div class="command-card">
+            <h3>Install</h3>
+            <p>Install the CLI from the official install script.</p>
+            <div class="code-row"><code>curl -fsSL https://chiq.uz/install.sh | sudo bash</code><button class="copy-btn"
+                data-copy="curl -fsSL https://chiq.uz/install.sh | sudo bash">⧉</button></div>
+          </div>
+          <div class="command-card">
+            <h3>HTTP tunnel</h3>
+            <p>Expose a local app on a public HTTPS URL.</p>
+            <div class="code-row"><code>chiq http 3000</code><button class="copy-btn"
+                data-copy="chiq http 3000">⧉</button></div>
+          </div>
+          <div class="command-card">
+            <h3>TCP tunnel</h3>
+            <p>Forward SSH, databases, or any raw TCP service.</p>
+            <div class="code-row"><code>chiq tcp 22</code><button class="copy-btn" data-copy="chiq tcp 22">⧉</button>
+            </div>
+          </div>
+          <div class="command-card">
+            <h3>Inspector</h3>
+            <p>Start with request logging and replay tools enabled.</p>
+            <div class="code-row"><code>chiq http 3000 --debug</code><button class="copy-btn"
+                data-copy="chiq http 3000 --debug">⧉</button></div>
+          </div>
+        </div>
+      </section>
 
-    <section class="section" id="use-cases" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">Use cases</span><h2>Built for the moments before deploy.</h2></div><p class="section-copy">Use chiq.uz when the outside world needs to reach something still running on your laptop, test box, private network, or short-lived preview.</p></div><div class="use-cases"><article class="case" data-reveal><h3>Webhook testing</h3><p>Receive callbacks on localhost. Inspect payloads and replay until the handler is right.</p></article><article class="case" data-reveal><h3>Live previews</h3><p>Share a local build without provisioning staging for every small review.</p></article><article class="case" data-reveal><h3>Mobile QA</h3><p>Open your local web app or API from a phone, tablet, or remote device.</p></article><article class="case" data-reveal><h3>Private access</h3><p>Forward TCP traffic for databases, SSH, internal tools, sockets, and services.</p></article></div></div></section>
+      <section class="section reveal" id="pricing">
+        <div class="section-head">
+          <div>
+            <p class="section-label">Pricing</p>
+            <h2>Simple while early access is open.</h2>
+          </div>
+          <p class="section-copy">Start free during early access. The product direction is clear: core tunneling stays
+            simple, advanced team tools can grow later.</p>
+        </div>
+        <div class="price-grid">
+          <div class="price-panel">
+            <h3>Early access</h3>
+            <p>Includes HTTP tunnels, TCP forwarding, request inspection, replay, reserved names, custom domains, and
+              basic analytics while the platform is being shaped.</p>
+            <a class="btn primary" href="https://t.me/bkzd19" target="_blank">Request Access</a>
+          </div>
+          <div class="price-panel table-wrap">
+            <table>
+              <tr>
+                <th>Feature</th>
+                <th>Free now</th>
+                <th>Pro later</th>
+              </tr>
+              <tr>
+                <td>HTTP tunnels</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+              </tr>
+              <tr>
+                <td>TCP forwarding</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+              </tr>
+              <tr>
+                <td>Replay</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+              </tr>
+              <tr>
+                <td>Custom domain</td>
+                <td class="yes">Yes</td>
+                <td class="yes">Yes</td>
+              </tr>
+              <tr>
+                <td>Advanced analytics</td>
+                <td class="dash">Basic</td>
+                <td class="soon">Planned</td>
+              </tr>
+            </table>
+          </div>
+        </div>
+      </section>
 
-    <section class="section" id="pricing" data-section><div class="wrap"><div class="price-card" data-reveal><div class="price-copy"><span class="mono-label">Pricing</span><h3>Start with early access. Keep the plan simple.</h3><p>Early access includes public HTTPS tunnels, TCP forwarding, inspection, replay, reserved subdomains, custom domains, and basic traffic controls.</p></div><div class="price-aside"><span class="mono-label">Included direction</span><ul><li>Concurrent tunnels</li><li>Reserved names</li><li>Custom domains</li><li>HTTP and TCP</li><li>Live inspector</li><li>Request replay</li></ul></div></div></div></section>
+      <section class="section reveal" id="faq">
+        <div class="section-head">
+          <div>
+            <p class="section-label">FAQ</p>
+            <h2>Short answers.</h2>
+          </div>
+          <p class="section-copy">Just enough context for a landing page. Full docs can stay separate when the product
+            is ready.</p>
+        </div>
+        <div class="faq">
+          <details>
+            <summary>Is chiq free?</summary>
+            <p>Yes, during early access.</p>
+          </details>
+          <details>
+            <summary>Does it support TCP?</summary>
+            <p>Yes. The workflow covers HTTP tunnels and raw TCP forwarding.</p>
+          </details>
+          <details>
+            <summary>Can I use custom domains?</summary>
+            <p>Yes. Custom domains and reserved subdomains are part of the planned workflow.</p>
+          </details>
+          <details>
+            <summary>Can I inspect requests?</summary>
+            <p>Yes. Incoming requests should show status, latency, headers, response, and body context.</p>
+          </details>
+        </div>
+      </section>
 
-    <section class="section" data-section><div class="wrap"><div class="section-head" data-reveal><div><span class="mono-label">FAQ</span><h2>Short answers.</h2></div><p class="section-copy">Enough context without turning the landing page into full documentation.</p></div><div class="faq"><article class="faq-item" data-reveal><h3>Can I inspect webhook payloads?</h3><p>Yes. Incoming requests should show headers, body, status, timing, and route context.</p></article><article class="faq-item" data-reveal><h3>Does it work from the terminal?</h3><p>Yes. The CLI is the fastest path for opening and controlling a tunnel.</p></article><article class="faq-item" data-reveal><h3>Can I use a stable URL?</h3><p>Reserved subdomains and custom domains are part of the planned workflow.</p></article><article class="faq-item" data-reveal><h3>Is TCP supported?</h3><p>Yes. The product direction covers HTTP tunnels and raw TCP forwarding.</p></article></div></div></section>
-
-    <section class="final" data-section><div class="wrap" data-reveal><span class="mono-label">Early access</span><h2>Give your local work a public surface.</h2><p>Join the early list and help shape a tunnel workflow for fast, precise local development.</p><div class="actions"><a class="btn" target="_blank" href="https://t.me/bkzd19">Request access</a><a class="btn" href="#quickstart">View CLI</a></div></div></section>
-    <footer><div class="wrap footer-inner"><span>chiq.uz</span><span>Write locally. Share publicly. Debug precisely.</span></div></footer>
+      <section class="section final reveal">
+        <div class="final-inner">
+          <p class="section-label">Early access</p>
+          <h2>Give your local work a public surface.</h2>
+          <p>Join early access and help shape a focused tunnel workflow for fast, precise local development.</p>
+          <a class="btn primary" href="https://t.me/bkzd19" target="_blank">Get Early Access</a>
+        </div>
+      </section>
+    </div>
   </main>
+
+
   <script>
     const root = document.documentElement;
-    const revealItems = document.querySelectorAll('[data-reveal]');
-    function updateScroll(){ const max=document.documentElement.scrollHeight-window.innerHeight; root.style.setProperty('--scroll', max>0 ? (window.scrollY/max).toFixed(4) : 0); }
-    window.addEventListener('scroll', updateScroll, {passive:true}); window.addEventListener('resize', updateScroll); updateScroll();
-    document.querySelectorAll('a[href^="#"]').forEach(link=>{ link.addEventListener('click', e=>{ const target=document.querySelector(link.getAttribute('href')); if(!target) return; e.preventDefault(); history.pushState(null,'',link.getAttribute('href')); const nav=document.querySelector('.nav'); const top=target.getBoundingClientRect().top+window.scrollY-(nav?nav.getBoundingClientRect().height+22:22); window.scrollTo({top:Math.max(0,top),behavior:'smooth'}); document.getElementById('nav-dropdown')?.classList.remove('open'); document.getElementById('nav-burger')?.classList.remove('open'); }); });
-    const burger=document.getElementById('nav-burger'); const dropdown=document.getElementById('nav-dropdown'); burger?.addEventListener('click',()=>{ burger.classList.toggle('open'); dropdown.classList.toggle('open'); });
-    document.querySelectorAll('.copy-btn').forEach(btn=>{ btn.addEventListener('click', async()=>{ try{ await navigator.clipboard.writeText(btn.getAttribute('data-copy')); btn.classList.add('copied'); setTimeout(()=>btn.classList.remove('copied'),1000); }catch(e){} }); });
-    const revealObserver=new IntersectionObserver(entries=>{ entries.forEach(entry=>{ if(entry.isIntersecting) entry.target.classList.add('visible'); }); },{threshold:.14}); revealItems.forEach(item=>revealObserver.observe(item));
+    const menuButton = document.getElementById('menu-btn');
+    const mobileMenu = document.getElementById('mobile-menu');
+    let scrollTicking = false;
+
+    function updateScroll() {
+      const max = document.documentElement.scrollHeight - window.innerHeight;
+      root.style.setProperty('--scroll', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
+    }
+    function requestScrollUpdate() {
+      if (scrollTicking) return;
+      scrollTicking = true;
+      requestAnimationFrame(() => {
+        updateScroll();
+        scrollTicking = false;
+      });
+    }
+    function closeMenu() {
+      mobileMenu?.classList.remove('open');
+      menuButton?.classList.remove('open');
+      menuButton?.setAttribute('aria-expanded', 'false');
+    }
+
+    window.addEventListener('scroll', requestScrollUpdate, { passive: true });
+    window.addEventListener('resize', requestScrollUpdate);
+    updateScroll();
+    menuButton?.addEventListener('click', () => {
+      const open = !mobileMenu.classList.contains('open');
+      mobileMenu.classList.toggle('open', open);
+      menuButton.classList.toggle('open', open);
+      menuButton.setAttribute('aria-expanded', String(open));
+    });
+    document.addEventListener('keydown', event => { if (event.key === 'Escape') closeMenu(); });
+    document.querySelectorAll('a[href^="#"]').forEach(link => {
+      link.addEventListener('click', event => {
+        const target = document.querySelector(link.getAttribute('href'));
+        if (!target) return;
+        event.preventDefault();
+        history.pushState(null, '', link.getAttribute('href'));
+        const nav = document.querySelector('.nav');
+        const top = target.getBoundingClientRect().top + window.scrollY - (nav ? nav.getBoundingClientRect().height + 24 : 24);
+        window.scrollTo({ top: Math.max(0, top), behavior: 'smooth' });
+        closeMenu();
+      });
+    });
+    document.querySelectorAll('.copy-btn').forEach(btn => {
+      btn.addEventListener('click', async () => {
+        try {
+          await navigator.clipboard.writeText(btn.getAttribute('data-copy'));
+          btn.textContent = '✓';
+          setTimeout(() => { btn.textContent = '⧉'; }, 900);
+        } catch (error) { }
+      });
+    });
   </script>
 </body>
+
 </html>
