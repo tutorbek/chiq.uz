@@ -221,8 +221,8 @@
       min-height: calc(100vh - 82px);
       padding: clamp(58px, 8vw, 104px) 0 clamp(70px, 9vw, 116px);
       display: grid;
-      grid-template-columns: minmax(0, .96fr) minmax(420px, .84fr);
-      gap: 34px;
+      grid-template-columns: minmax(0, 1fr) minmax(360px, .62fr);
+      gap: clamp(34px, 5vw, 72px);
       align-items: center;
     }
 
@@ -282,37 +282,56 @@
       flex-wrap: wrap;
     }
 
-    .hero-proof {
-      margin-top: 28px;
+    .hero-stack {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 10px;
-      max-width: 560px;
+      gap: 16px;
+      min-width: 0;
+      width: min(520px, 100%);
+      justify-self: end;
+    }
+
+    .hero-support {
+      padding: 0 0 clamp(72px, 8vw, 108px);
+      margin-top: clamp(-28px, -2vw, -12px);
+    }
+
+    .support-grid {
+      display: grid;
+      grid-template-columns: minmax(280px, .62fr) minmax(420px, 1fr);
+      gap: 16px;
+      align-items: stretch;
+    }
+
+    .proof-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
     }
 
     .proof {
-      padding: 14px 16px;
+      min-height: 116px;
+      padding: 22px;
       border: 1px solid var(--line);
-      border-radius: var(--radius-sm);
-      background: rgba(23, 23, 23, .54);
+      border-radius: var(--radius);
+      display: grid;
+      align-content: center;
+      background: var(--card-2);
+      box-shadow: 0 18px 52px rgba(0, 0, 0, .22);
+      contain: layout paint;
     }
 
     .proof strong {
       display: block;
-      margin-bottom: 5px;
-      font-size: 20px;
+      margin-bottom: 8px;
+      font-size: 22px;
+      line-height: 1;
       letter-spacing: -.03em;
     }
 
     .proof span {
       color: var(--faint);
-      font-size: 12px;
-    }
-
-    .hero-stack {
-      display: grid;
-      gap: 16px;
-      min-width: 0;
+      font-size: 13px;
+      line-height: 1.45;
     }
 
     .panel,
@@ -366,12 +385,18 @@
     }
 
     .terminal-body {
-      height: 232px;
+      height: 218px;
       padding: 24px;
+      display: grid;
+      align-content: center;
+      gap: 10px;
       font: 700 13px/1.9 "JetBrains Mono", monospace;
       overflow-x: auto;
-      white-space: pre-wrap;
-      word-break: break-word;
+      white-space: nowrap;
+    }
+
+    .terminal-line {
+      min-width: max-content;
     }
 
     .green {
@@ -810,7 +835,8 @@
       .hero,
       .section-head,
       .analytics-grid,
-      .price-grid {
+      .price-grid,
+      .support-grid {
         grid-template-columns: 1fr;
       }
 
@@ -822,10 +848,17 @@
         text-align: center;
       }
 
-      .hero-actions,
-      .hero-proof {
+      .hero-actions {
         justify-content: center;
         margin-inline: auto;
+      }
+
+      .hero-stack {
+        justify-self: center;
+      }
+
+      .proof-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .metrics,
@@ -946,8 +979,8 @@
         font-size: clamp(44px, 12.4vw, 68px);
       }
 
-      .hero-proof,
       .feature-grid,
+      .proof-grid,
       .metrics,
       .commands,
       .faq {
@@ -1078,11 +1111,6 @@
             <a class="btn primary" href="https://t.me/bkzd19" target="_blank">Get Early Access</a>
             <a class="btn" href="#cli">View CLI</a>
           </div>
-          <div class="hero-proof" aria-label="Product highlights">
-            <div class="proof"><strong>HTTP</strong><span>Public URLs for local ports</span></div>
-            <div class="proof"><strong>TCP</strong><span>SSH, databases, sockets</span></div>
-            <div class="proof"><strong>Replay</strong><span>Fix and resend requests</span></div>
-          </div>
         </div>
 
         <div class="hero-stack">
@@ -1091,15 +1119,23 @@
               <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span
                 class="panel-title">Tunnel session</span>
             </div>
-            <div class="terminal-body" id="terminal"><span class="green">$</span> chiq http 3000 --inspect
-
-              <span class="violet">Public URL</span>
-              <span class="blue">https://demo.chiq.uz</span>
-
-              <span class="amber">localhost:3000</span><span class="cursor">▋</span>
+            <div class="terminal-body" id="terminal">
+              <div class="terminal-line"><span class="green">$</span> chiq http 3000 --inspect</div>
+              <div class="terminal-line"><span class="violet">public</span> <span class="blue">https://demo.chiq.uz</span></div>
+              <div class="terminal-line"><span class="violet">local</span> <span class="amber">localhost:3000</span><span class="cursor">▋</span></div>
             </div>
           </div>
-          <div class="panel inspector reveal">
+        </div>
+      </section>
+
+      <section class="hero-support reveal" aria-label="Tunnel details">
+        <div class="support-grid">
+          <div class="proof-grid" aria-label="Product highlights">
+            <div class="proof"><strong>HTTP</strong><span>Public URLs for local ports</span></div>
+            <div class="proof"><strong>TCP</strong><span>SSH, databases, sockets</span></div>
+            <div class="proof"><strong>Replay</strong><span>Fix and resend requests</span></div>
+          </div>
+          <div class="panel inspector">
             <div class="inspector-head"><span class="panel-title">Request inspector</span><span class="live">Live</span>
             </div>
             <div class="logs" id="logs">
