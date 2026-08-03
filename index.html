@@ -53,6 +53,11 @@
       scroll-behavior: smooth;
       scroll-padding-top: 96px;
       -webkit-text-size-adjust: 100%;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    *, *::before, *::after {
+      -webkit-tap-highlight-color: transparent;
     }
 
     body {
@@ -65,6 +70,7 @@
       overscroll-behavior-y: none;
       text-rendering: optimizeLegibility;
       -webkit-font-smoothing: antialiased;
+      -webkit-tap-highlight-color: transparent;
     }
 
     body::before {
@@ -111,7 +117,7 @@
     }
 
     .container {
-      width: min(1240px, calc(100% - 48px));
+      width: min(1020px, calc(100% - 48px));
       margin: 0 auto;
     }
 
@@ -119,17 +125,68 @@
       position: sticky;
       top: 16px;
       z-index: 70;
-      width: min(980px, calc(100% - 32px));
+      width: min(1020px, calc(100% - 48px));
       min-height: 58px;
       margin: 16px auto 0;
-      padding: 8px;
-      border: 1px solid var(--line);
-      border-radius: 999px;
+      padding: 8px 0;
+      border: 1px solid transparent;
+      border-radius: 0px;
       display: flex;
       align-items: center;
       gap: 6px;
-      background: rgba(23, 23, 23, .7);
-      box-shadow: 0 18px 70px rgba(0, 0, 0, .44);
+      background: transparent;
+      box-shadow: none;
+      backdrop-filter: none;
+      -webkit-backdrop-filter: none;
+      transition: width 350ms var(--ease-out), padding 350ms var(--ease-out), background 350ms var(--ease-out), border-color 350ms var(--ease-out), border-radius 350ms var(--ease-out), box-shadow 350ms var(--ease-out);
+    }
+
+    /* Top Edge Metallic Specular Sheen */
+    .nav::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 12%;
+      right: 12%;
+      height: 1px;
+      background: linear-gradient(90deg, transparent 0%, rgba(255, 255, 255, 0.65) 50%, transparent 100%);
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 350ms var(--ease-out);
+    }
+
+    /* Floor Ambient Lighting Effect */
+    .nav::after {
+      content: "";
+      position: absolute;
+      bottom: -28px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 82%;
+      height: 40px;
+      background: radial-gradient(ellipse at top, rgba(255, 255, 255, 0.38) 0%, rgba(255, 255, 255, 0.12) 38%, transparent 75%);
+      filter: blur(14px);
+      pointer-events: none;
+      z-index: -1;
+      opacity: 0;
+      transition: opacity 350ms var(--ease-out);
+    }
+
+    /* Scrolled Floating Glasspill Morph State */
+    .nav.scrolled {
+      width: min(840px, calc(100% - 32px));
+      padding: 8px 12px;
+      border-color: rgba(255, 255, 255, 0.09);
+      border-radius: 999px;
+      background: linear-gradient(180deg, rgba(14, 14, 16, 0.96) 0%, rgba(4, 4, 5, 0.98) 100%);
+      box-shadow: 0 24px 75px rgba(0, 0, 0, 0.88);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+    }
+
+    .nav.scrolled::before,
+    .nav.scrolled::after {
+      opacity: 1;
     }
 
     .logo {
@@ -146,6 +203,7 @@
     }
 
     .nav-links {
+      position: relative;
       margin-left: auto;
       display: flex;
       align-items: center;
@@ -153,21 +211,24 @@
     }
 
     .nav-links a {
+      position: relative;
+      z-index: 1;
       min-height: 40px;
-      padding: 0 13px;
+      padding: 0 14px;
       border-radius: 999px;
       display: inline-flex;
       align-items: center;
+      gap: 7px;
       text-decoration: none;
       color: var(--muted);
       font-size: 13px;
       font-weight: 700;
-      transition: color 160ms var(--ease-out), background 160ms var(--ease-out);
     }
 
-    .nav-links a:hover {
-      color: var(--text);
-      background: rgba(255, 255, 255, .06);
+    .nav-links a svg {
+      width: 14px;
+      height: 14px;
+      opacity: 0.7;
     }
 
     .btn {
@@ -185,13 +246,31 @@
       font: 800 12px/1 "JetBrains Mono", monospace;
       letter-spacing: .08em;
       text-transform: uppercase;
-      transition: transform 140ms var(--ease-out), background 180ms var(--ease-out), color 180ms var(--ease-out), border-color 180ms var(--ease-out);
+      transition: transform 140ms var(--ease-out), background 180ms var(--ease-out), color 180ms var(--ease-out), border-color 180ms var(--ease-out), box-shadow 180ms var(--ease-out);
     }
 
     .btn.primary {
+      position: relative;
       background: var(--text);
       color: var(--bg);
       border-color: var(--text);
+      overflow: hidden;
+    }
+
+    .btn.primary::before {
+      content: "";
+      position: absolute;
+      inset: -50%;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.4) 0%, transparent 60%);
+      opacity: 0;
+      transform: scale(0.5);
+      transition: transform 300ms var(--ease-out), opacity 300ms var(--ease-out);
+      pointer-events: none;
+    }
+
+    .btn.primary:hover::before {
+      opacity: 0.2;
+      transform: scale(1.2);
     }
 
     .btn:hover {
@@ -201,9 +280,10 @@
     }
 
     .btn:active,
+    .logo:active,
     .copy-btn:active,
     .menu-btn:active {
-      transform: scale(.97);
+      transform: scale(.96) !important;
     }
 
     .nav-cta {
@@ -217,82 +297,167 @@
       display: none;
     }
 
+    /* Hero Staggered Reveal */
+    .hero-copy > * {
+      opacity: 0;
+      transform: translateY(18px);
+      animation: heroFadeUp 500ms var(--ease-out) forwards;
+    }
+
+    .hero-copy .eyebrow { animation-delay: 60ms; }
+    .hero-copy h1 { animation-delay: 140ms; }
+    .hero-copy .lead { animation-delay: 220ms; }
+    .hero-copy .hero-actions { animation-delay: 300ms; }
+
+    .hero-stack {
+      opacity: 0;
+      transform: translateY(22px) scale(0.98);
+      animation: heroPanelFadeUp 600ms var(--ease-out) 380ms forwards;
+    }
+
+    @keyframes heroFadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes heroPanelFadeUp {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    /* Terminal Cursor Blink & Typing Smoothness */
+    @keyframes blink {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0; }
+    }
+
+    .cursor {
+      display: inline-block;
+      margin-left: 2px;
+      animation: blink 800ms infinite;
+      color: var(--green);
+    }
+
     .hero {
-      min-height: calc(100vh - 82px);
-      padding: clamp(58px, 8vw, 104px) 0 clamp(70px, 9vw, 116px);
-      display: grid;
-      grid-template-columns: minmax(0, 1fr) minmax(360px, .62fr);
-      gap: clamp(34px, 5vw, 72px);
+      padding: clamp(52px, 6vw, 84px) 0 clamp(48px, 5vw, 68px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      text-align: center;
+      gap: clamp(36px, 4vw, 52px);
+    }
+
+    .hero-copy {
+      max-width: 840px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
       align-items: center;
     }
 
-    .eyebrow,
-    .section-label {
-      margin: 0;
-      color: var(--text);
-      font: 800 11px/1.2 "JetBrains Mono", monospace;
-      letter-spacing: .22em;
-      text-transform: uppercase;
-      opacity: .76;
+    .hero-copy h1 {
+      max-width: 800px;
     }
 
-    h1,
-    h2,
-    h3,
-    p {
-      margin-top: 0;
-    }
-
-    h1 {
-      max-width: 720px;
-      margin-bottom: 24px;
-      font-size: clamp(50px, 6.8vw, 88px);
-      line-height: .9;
-      letter-spacing: -.075em;
-      text-wrap: balance;
-    }
-
-    h2 {
-      margin: 12px 0 0;
-      font-size: clamp(42px, 5.6vw, 78px);
-      line-height: .94;
-      letter-spacing: -.06em;
-      text-wrap: balance;
-    }
-
-    h3 {
-      margin-bottom: 10px;
-      font-size: 19px;
-      line-height: 1.2;
-      letter-spacing: -.025em;
-    }
-
-    .lead {
-      max-width: 620px;
-      margin-bottom: 28px;
-      color: var(--muted);
-      font-size: clamp(17px, 1.7vw, 22px);
-      line-height: 1.62;
-      text-wrap: balance;
+    .hero-copy .lead {
+      max-width: 660px;
     }
 
     .hero-actions {
-      display: flex;
-      gap: 12px;
-      flex-wrap: wrap;
+      justify-content: center;
     }
 
     .hero-stack {
-      display: grid;
-      gap: 16px;
+      width: 100%;
+      max-width: 100%;
+    }
+
+    .terminal-panel {
+      width: 100%;
+      height: 394px;
+      border-radius: clamp(16px, 2vw, 22px);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      background: #08080a;
+      box-shadow: 0 32px 100px rgba(0, 0, 0, 0.62), 0 0 0 1px rgba(255, 255, 255, 0.05);
+      overflow: hidden;
+      contain: layout paint;
+    }
+
+    .panel-bar {
+      height: 44px;
+      padding: 0 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      background: rgba(255, 255, 255, 0.03);
+    }
+
+    .dots {
+      display: flex;
+      gap: 8px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+    .dot-red { background: #FF5F56; opacity: 0.9; }
+    .dot-yellow { background: #FFBD2E; opacity: 0.9; }
+    .dot-green { background: #27C93F; opacity: 0.9; }
+
+    .terminal-body {
+      height: 350px;
+      padding: 20px 24px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      gap: 10px;
+      font: 700 13px/1.7 "JetBrains Mono", monospace;
+      overflow-y: hidden;
+      overflow-x: hidden;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      text-align: left;
+      scrollbar-width: none;
+    }
+
+    .terminal-body::-webkit-scrollbar {
+      display: none;
+    }
+
+    .terminal-line {
+      width: 100%;
+      max-width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 8px 12px;
+      flex-wrap: wrap;
+      word-break: break-word;
+      overflow-wrap: anywhere;
+      opacity: 0;
+      transform: translateY(4px);
+      transition: opacity 220ms var(--ease-out), transform 220ms var(--ease-out);
+    }
+
+    .terminal-line.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .terminal-line span {
       min-width: 0;
-      width: min(520px, 100%);
-      justify-self: end;
     }
 
     .hero-support {
       padding: 0 0 clamp(72px, 8vw, 108px);
-      margin-top: clamp(-28px, -2vw, -12px);
+      margin-top: clamp(0px, 1vw, 16px);
     }
 
     .support-grid {
@@ -309,7 +474,7 @@
     }
 
     .proof {
-      min-height: 116px;
+      min-height: 128px;
       padding: 22px;
       border: 1px solid var(--line);
       border-radius: var(--radius);
@@ -384,20 +549,7 @@
       text-transform: uppercase;
     }
 
-    .terminal-body {
-      height: 218px;
-      padding: 24px;
-      display: grid;
-      align-content: center;
-      gap: 10px;
-      font: 700 13px/1.9 "JetBrains Mono", monospace;
-      overflow-x: auto;
-      white-space: nowrap;
-    }
 
-    .terminal-line {
-      min-width: max-content;
-    }
 
     .green {
       color: var(--green);
@@ -425,11 +577,17 @@
 
     .inspector {
       overflow: hidden;
+      contain: layout paint;
+      display: flex;
+      flex-direction: column;
+      height: 408px;
+      max-height: 408px;
     }
 
     .inspector-head {
-      min-height: 44px;
-      padding: 0 16px;
+      height: 48px;
+      flex-shrink: 0;
+      padding: 0 18px;
       border-bottom: 1px solid rgba(255, 255, 255, .065);
       display: flex;
       align-items: center;
@@ -438,7 +596,7 @@
     }
 
     .live {
-      padding: 7px 10px;
+      padding: 6px 10px;
       border-radius: 999px;
       background: rgba(124, 255, 178, .12);
       color: var(--green);
@@ -448,28 +606,65 @@
     }
 
     .logs {
-      height: 260px;
-      padding: 10px;
-      display: grid;
-      gap: 8px;
+      height: 360px;
+      max-height: 360px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
       overflow: hidden;
     }
 
     .log {
+      height: 60px;
+      max-height: 60px;
+      flex-shrink: 0;
+      width: 100%;
       display: grid;
-      grid-template-columns: 54px 1fr 54px;
-      gap: 10px;
+      grid-template-columns: 58px minmax(0, 1fr) auto;
+      gap: 14px;
       align-items: center;
-      padding: 12px 14px;
+      padding: 0 16px;
       border-radius: 12px;
       background: rgba(5, 5, 5, .64);
-      font: 800 12px/1.2 "JetBrains Mono", monospace;
+      border: 1px solid rgba(255, 255, 255, 0.05);
+      font: 700 13px/1 "JetBrains Mono", monospace;
+      transition: transform 200ms var(--ease-out), background 200ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+      cursor: pointer;
     }
+
+    .log:hover {
+      transform: translateX(4px);
+      background: rgba(23, 23, 23, 0.95);
+      border-color: rgba(255, 255, 255, 0.18);
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.4);
+    }
+
+    .log:active {
+      transform: translateX(2px) scale(0.98);
+    }
+
+    .log span:first-child {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      height: 26px;
+      border-radius: 6px;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.04em;
+    }
+
+    .log span.green { background: rgba(124, 255, 178, 0.14); color: var(--green); }
+    .log span.red { background: rgba(255, 107, 107, 0.14); color: var(--red); }
+    .log span.blue { background: rgba(124, 203, 255, 0.14); color: var(--blue); }
+    .log span.violet { background: rgba(201, 163, 255, 0.14); color: var(--violet); }
 
     .log span:nth-child(2) {
       min-width: 0;
       overflow: hidden;
-      color: var(--amber);
+      color: var(--text);
+      font-size: 13px;
       text-overflow: ellipsis;
       white-space: nowrap;
     }
@@ -477,7 +672,31 @@
     .log span:last-child {
       text-align: right;
       color: var(--faint);
+      font-size: 12px;
+      white-space: nowrap;
+      flex-shrink: 0;
     }
+
+    /* Request Inspector Flash Keyframes (Bottom to Top) */
+    @keyframes logFlashGreen {
+      0% { background: rgba(124, 255, 178, 0.24); border-color: rgba(124, 255, 178, 0.5); transform: translateY(12px) scale(0.97); }
+      60% { background: rgba(124, 255, 178, 0.12); }
+      100% { background: rgba(5, 5, 5, .64); border-color: rgba(255, 255, 255, 0.04); transform: translateY(0) scale(1); }
+    }
+    @keyframes logFlashRed {
+      0% { background: rgba(255, 107, 107, 0.24); border-color: rgba(255, 107, 107, 0.5); transform: translateY(12px) scale(0.97); }
+      60% { background: rgba(255, 107, 107, 0.12); }
+      100% { background: rgba(5, 5, 5, .64); border-color: rgba(255, 255, 255, 0.04); transform: translateY(0) scale(1); }
+    }
+    @keyframes logFlashBlue {
+      0% { background: rgba(124, 203, 255, 0.24); border-color: rgba(124, 203, 255, 0.5); transform: translateY(12px) scale(0.97); }
+      60% { background: rgba(124, 203, 255, 0.12); }
+      100% { background: rgba(5, 5, 5, .64); border-color: rgba(255, 255, 255, 0.04); transform: translateY(0) scale(1); }
+    }
+
+    .log-flash-green { animation: logFlashGreen 650ms var(--ease-out) forwards; }
+    .log-flash-red { animation: logFlashRed 650ms var(--ease-out) forwards; }
+    .log-flash-blue { animation: logFlashBlue 650ms var(--ease-out) forwards; }
 
     .section {
       padding: clamp(76px, 9vw, 116px) 0;
@@ -527,29 +746,48 @@
       display: grid;
       grid-template-columns: minmax(280px, 360px) minmax(0, 1fr);
       gap: 16px;
+      align-items: stretch;
     }
 
-    .card {
+    .analytics-grid > .card {
+      height: 380px;
+      max-height: 380px;
       padding: 24px;
-      min-width: 0;
+      overflow: hidden;
+      contain: layout paint;
+      display: flex;
+      flex-direction: column;
     }
 
     .activity-list {
-      display: grid;
-      gap: 8px;
+      flex: 1;
+      height: 300px;
+      max-height: 300px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      overflow: hidden;
+      margin-top: 12px;
     }
 
     .activity-list .log {
+      height: 48px;
+      max-height: 48px;
+      flex-shrink: 0;
       background: rgba(5, 5, 5, .72);
     }
 
     .chart {
-      min-height: 320px;
+      height: 380px;
+      max-height: 380px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
       overflow: hidden;
     }
 
     .chart-top {
-      margin-bottom: 18px;
+      margin-bottom: 14px;
       display: flex;
       justify-content: space-between;
       gap: 16px;
@@ -558,7 +796,9 @@
 
     .chart svg {
       width: 100%;
-      height: 230px;
+      height: 240px;
+      max-height: 240px;
+      flex: 1;
       display: block;
     }
 
@@ -572,28 +812,101 @@
       stroke-width: 4;
       stroke-linecap: round;
       stroke-linejoin: round;
+      stroke-dasharray: 1000;
+      stroke-dashoffset: 1000;
+      transition: stroke-dashoffset 2s var(--ease-out);
+      will-change: stroke-dashoffset;
     }
 
+    .chart-line.drawn {
+      stroke-dashoffset: 0;
+    }
+
+    /* Live Badge Pulse Animation */
+    .live {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .live::before {
+      content: "";
+      width: 6px;
+      height: 6px;
+      border-radius: 50%;
+      background: currentColor;
+      box-shadow: 0 0 8px currentColor;
+      animation: livePulse 1.8s infinite ease-in-out;
+    }
+
+    @keyframes livePulse {
+      0%, 100% { opacity: 1; transform: scale(1); }
+      50% { opacity: 0.35; transform: scale(0.75); }
+    }
+
+    /* Dynamic Log Slide In */
+    @keyframes logSlideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-12px) scale(0.97);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+
+    .log-new {
+      animation: logSlideIn 350ms var(--ease-out) forwards;
+    }
+
+    /* Motion Scroll Reveal Enhancements */
+    .reveal {
+      opacity: 0;
+      transform: translateY(28px) scale(0.97);
+      transition: opacity 550ms var(--ease-out), transform 550ms var(--ease-out);
+      will-change: opacity, transform;
+    }
+
+    .reveal.show {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    /* Features Section Stagger Reveal */
     .feature-grid {
       display: grid;
       grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 14px;
+      gap: 18px;
     }
 
     .feature-card {
-      min-height: 184px;
-      padding: 24px;
-      transition: transform 180ms var(--ease-out), border-color 180ms var(--ease-out);
+      min-height: 190px;
+      padding: 26px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      opacity: 0;
+      transform: translateY(24px) scale(0.96);
+      transition: opacity 480ms var(--ease-out), transform 480ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+      will-change: opacity, transform;
     }
 
-    .feature-card:hover {
-      transform: translateY(-2px);
-      border-color: rgba(255, 255, 255, .16);
+    .feature-grid.show .feature-card {
+      opacity: 1;
+      transform: translateY(0) scale(1);
     }
+
+    .feature-grid.show .feature-card:nth-child(1) { transition-delay: 0ms; }
+    .feature-grid.show .feature-card:nth-child(2) { transition-delay: 50ms; }
+    .feature-grid.show .feature-card:nth-child(3) { transition-delay: 100ms; }
+    .feature-grid.show .feature-card:nth-child(4) { transition-delay: 150ms; }
+    .feature-grid.show .feature-card:nth-child(5) { transition-delay: 200ms; }
+    .feature-grid.show .feature-card:nth-child(6) { transition-delay: 250ms; }
 
     .feature-card b {
       display: inline-flex;
-      margin-bottom: 24px;
+      margin-bottom: 20px;
       color: var(--green);
       font: 800 11px/1 "JetBrains Mono", monospace;
       letter-spacing: .12em;
@@ -610,6 +923,12 @@
       color: var(--violet);
     }
 
+    .feature-card h3 {
+      margin: 0 0 10px 0;
+      font-size: 19px;
+      letter-spacing: -0.02em;
+    }
+
     .feature-card p {
       margin: 0;
       color: var(--muted);
@@ -617,22 +936,45 @@
       font-size: 14px;
     }
 
+    .feature-card:hover,
+    .command-card:hover {
+      transform: translateY(-4px);
+      border-color: rgba(255, 255, 255, .22);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, .42);
+    }
+
+    .feature-card:active,
+    .command-card:active {
+      transform: translateY(-1px) scale(0.985);
+    }
+
+    /* CLI Section Stagger & Copy Button Pop */
     .commands {
       display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      gap: 14px;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 20px;
     }
 
     .command-card {
       min-width: 0;
-      min-height: 192px;
-      padding: 20px;
+      min-height: 160px;
+      padding: 24px 26px;
       display: flex;
       flex-direction: column;
+      opacity: 0;
+      transform: translateY(24px) scale(0.96);
+      transition: opacity 480ms var(--ease-out), transform 480ms var(--ease-out), border-color 200ms var(--ease-out), box-shadow 200ms var(--ease-out);
+      will-change: opacity, transform;
+    }
+
+    .command-card h3 {
+      margin: 0 0 6px 0;
+      font-size: 19px;
+      letter-spacing: -0.02em;
     }
 
     .command-card p {
-      margin-bottom: 16px;
+      margin: 0 0 16px 0;
       color: var(--muted);
       font-size: 14px;
       line-height: 1.55;
@@ -640,14 +982,14 @@
 
     .code-row {
       margin-top: auto;
-      padding: 11px 12px;
+      padding: 12px 16px;
       border-radius: 12px;
       display: flex;
       align-items: center;
-      gap: 8px;
-      background: rgba(5, 5, 5, .76);
-      color: var(--green);
-      font: 800 12px/1.4 "JetBrains Mono", monospace;
+      gap: 12px;
+      background: rgba(5, 5, 5, .82);
+      border: 1px solid rgba(255, 255, 255, .06);
+      font: 700 13px/1.4 "JetBrains Mono", monospace;
       overflow: hidden;
     }
 
@@ -656,183 +998,308 @@
       min-width: 0;
       overflow-x: auto;
       white-space: nowrap;
-      scrollbar-width: thin;
+      scrollbar-width: none;
+      -ms-overflow-style: none;
     }
 
-    .copy-btn {
-      flex: 0 0 30px;
-      width: 30px;
-      height: 30px;
-      border: 1px solid rgba(255, 255, 255, .06);
-      border-radius: 9px;
-      display: grid;
-      place-items: center;
-      background: rgba(255, 255, 255, .055);
-      color: var(--text);
-      cursor: pointer;
-      opacity: .74;
-      transition: opacity 160ms var(--ease-out), background 160ms var(--ease-out), transform 140ms var(--ease-out);
+    .code-row code::-webkit-scrollbar {
+      display: none;
     }
 
-    .copy-btn:hover {
+    /* Terminal Code Syntax Highlighting */
+    .code-row code .cmd { color: var(--green); font-weight: 800; }
+    .code-row code .sub { color: var(--blue); font-weight: 800; }
+    .code-row code .flag { color: var(--amber); }
+    .code-row code .num { color: #FFD166; font-weight: 800; }
+    .code-row code .url { color: var(--violet); text-decoration: underline; text-underline-offset: 3px; }
+    .code-row code .op { color: #FF5F56; font-weight: 800; }
+
+    .commands.show .command-card {
       opacity: 1;
-      background: rgba(255, 255, 255, .1);
+      transform: translateY(0) scale(1);
     }
 
+    .commands.show .command-card:nth-child(1) { transition-delay: 0ms; }
+    .commands.show .command-card:nth-child(2) { transition-delay: 70ms; }
+    .commands.show .command-card:nth-child(3) { transition-delay: 140ms; }
+    .commands.show .command-card:nth-child(4) { transition-delay: 210ms; }
+
+    /* Pricing 3D Scale & Table Row Staggering */
     .price-grid {
       display: grid;
-      grid-template-columns: minmax(0, .9fr) minmax(320px, .72fr);
-      gap: 16px;
+      grid-template-columns: minmax(0, 0.85fr) minmax(0, 1.15fr);
+      gap: 24px;
       align-items: stretch;
     }
 
     .price-panel {
-      padding: 28px;
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      opacity: 0;
+      transform: translateY(24px) scale(0.97);
+      transition: opacity 500ms var(--ease-out), transform 500ms var(--ease-out), border-color 200ms var(--ease-out);
+      will-change: opacity, transform;
+    }
+
+    .price-panel h3 {
+      margin: 0;
+      font-size: 22px;
+      letter-spacing: -0.03em;
+    }
+
+    .price-hero {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      margin: 16px 0 12px;
+    }
+
+    .price-hero .amount {
+      font-size: clamp(38px, 4vw, 52px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.05em;
+      color: var(--text);
+    }
+
+    .price-hero .period {
+      font-size: 13px;
+      color: var(--muted);
     }
 
     .price-panel p {
+      margin: 0 0 20px 0;
       color: var(--muted);
-      line-height: 1.7;
-    }
-
-    .table-wrap {
-      overflow-x: auto;
-      border-radius: var(--radius);
-    }
-
-    table {
-      width: 100%;
-      min-width: 520px;
-      border-collapse: collapse;
+      line-height: 1.65;
       font-size: 14px;
     }
 
-    th,
-    td {
-      padding: 16px;
-      border-bottom: 1px solid rgba(255, 255, 255, .075);
-      text-align: left;
+    .price-features {
+      list-style: none;
+      padding: 0;
+      margin: 0 0 28px 0;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
     }
 
-    th {
+    .price-features li {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--text);
+    }
+
+    .price-features li svg {
+      width: 16px;
+      height: 16px;
+      color: var(--green);
+      flex-shrink: 0;
+    }
+
+    .table-wrap {
+      padding: 24px 28px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+
+    .table-wrap table {
+      width: 100%;
+      border-collapse: collapse;
+    }
+
+    .table-wrap th {
+      padding: 14px 18px;
       color: var(--faint);
       font: 800 11px/1 "JetBrains Mono", monospace;
       letter-spacing: .12em;
       text-transform: uppercase;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      text-align: left;
     }
 
-    td:not(:first-child) {
+    .table-wrap td {
+      padding: 14px 18px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      font-size: 14px;
+      color: var(--text);
+    }
+
+    .table-wrap tr {
+      transition: background 160ms var(--ease-out);
+    }
+
+    .table-wrap tr:hover td {
+      background: rgba(255, 255, 255, 0.025);
+    }
+
+    .table-wrap tr:last-child td {
+      border-bottom: none;
+    }
+
+    .price-grid.show .price-panel {
+      opacity: 1;
+      transform: translateY(0) scale(1);
+    }
+
+    .price-grid.show .price-panel:nth-child(1) { transition-delay: 0ms; }
+    .price-grid.show .price-panel:nth-child(2) { transition-delay: 100ms; }
+
+    tr {
+      opacity: 0;
+      transform: translateX(-12px);
+      transition: opacity 360ms var(--ease-out), transform 360ms var(--ease-out);
+    }
+
+    .price-grid.show tr {
+      opacity: 1;
+      transform: translateX(0);
+    }
+
+    .price-grid.show tr:nth-child(1) { transition-delay: 60ms; }
+    .price-grid.show tr:nth-child(2) { transition-delay: 120ms; }
+    .price-grid.show tr:nth-child(3) { transition-delay: 180ms; }
+    .price-grid.show tr:nth-child(4) { transition-delay: 240ms; }
+    .price-grid.show tr:nth-child(5) { transition-delay: 300ms; }
+
+    .yes, .soon, .dash {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 5px 14px;
+      border-radius: 999px;
+      font-size: 12px;
       font-weight: 800;
-    }
-
-    tr:last-child td {
-      border-bottom: 0;
+      line-height: 1;
+      opacity: 0;
+      transform: scale(0.4);
+      transition: opacity 280ms var(--ease-out), transform 280ms cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
 
     .yes {
+      background: rgba(124, 255, 178, 0.12);
       color: var(--green);
+      border: 1px solid rgba(124, 255, 178, 0.2);
     }
 
     .soon {
+      background: rgba(124, 203, 255, 0.12);
       color: var(--blue);
+      border: 1px solid rgba(124, 203, 255, 0.2);
     }
 
     .dash {
+      background: rgba(255, 255, 255, 0.05);
       color: var(--faint);
+      border: 1px solid rgba(255, 255, 255, 0.08);
     }
 
+    .price-grid.show .yes,
+    .price-grid.show .soon,
+    .price-grid.show .dash {
+      opacity: 1;
+      transform: scale(1);
+    }
+
+    /* Modern FAQ Grid & Accordion Styling */
     .faq {
       display: grid;
       grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
+      gap: 16px;
     }
 
     .faq details {
-      padding: 18px 20px;
+      border: 1px solid var(--line);
+      border-radius: clamp(14px, 1.5vw, 18px);
+      background: rgba(18, 18, 22, 0.6);
+      padding: 22px 24px;
+      transition: transform 220ms var(--ease-out), border-color 220ms var(--ease-out), background 220ms var(--ease-out), box-shadow 220ms var(--ease-out);
+      contain: layout paint;
+    }
+
+    .faq details:hover {
+      transform: translateY(-2px);
+      border-color: rgba(255, 255, 255, 0.18);
+      background: rgba(23, 23, 28, 0.85);
+      box-shadow: 0 12px 32px rgba(0, 0, 0, 0.35);
+    }
+
+    .faq details[open] {
+      border-color: rgba(255, 255, 255, 0.22);
+      background: rgba(26, 26, 32, 0.95);
+      box-shadow: 0 16px 48px rgba(0, 0, 0, 0.55);
     }
 
     .faq summary {
       cursor: pointer;
-      font-weight: 800;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text);
       list-style: none;
+      user-select: none;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
     }
 
     .faq summary::-webkit-details-marker {
       display: none;
     }
 
-    .faq summary::after {
-      content: "+";
-      float: right;
-      color: var(--faint);
-      font-family: "JetBrains Mono", monospace;
+    .faq-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      flex-shrink: 0;
+      transition: transform 260ms var(--ease-out), background 220ms var(--ease-out), color 220ms var(--ease-out), border-color 220ms var(--ease-out);
     }
 
-    .faq details[open] summary::after {
-      content: "-";
+    .faq-icon svg {
+      width: 14px;
+      height: 14px;
+      transition: transform 260ms var(--ease-out);
+    }
+
+    .faq details[open] .faq-icon {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--text);
+      border-color: rgba(255, 255, 255, 0.22);
+    }
+
+    .faq details[open] .faq-icon svg {
+      transform: rotate(180deg);
     }
 
     .faq p {
       margin: 14px 0 0;
       color: var(--muted);
-      line-height: 1.62;
+      line-height: 1.68;
       font-size: 14px;
+      opacity: 0;
+      transform: translateY(-6px);
+      animation: faqContentFade 250ms var(--ease-out) forwards;
     }
 
-    .final {
-      min-height: 58vh;
-      display: grid;
-      place-items: center;
-      text-align: center;
-    }
-
-    .final-inner {
-      width: min(760px, 100%);
-      margin: 0 auto;
-    }
-
-    .final p {
-      margin: 22px auto 30px;
-      max-width: 580px;
-      color: var(--muted);
-      line-height: 1.7;
-    }
-
-    footer {
-      padding: 42px 0 34px;
-      border-top: 1px solid var(--line);
-    }
-
-    .footer-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1.5fr) repeat(3, minmax(120px, .6fr));
-      gap: 22px;
-      color: var(--muted);
-      font-size: 14px;
-    }
-
-    .footer-grid b {
-      color: var(--text);
-    }
-
-    .footer-grid p {
-      margin: 10px 0 0;
-    }
-
-    .reveal {
-      opacity: 1;
-      transform: none;
-      transition: none;
-    }
-
-    .reveal.show {
-      opacity: 1;
-      transform: none;
+    @keyframes faqContentFade {
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     @media (max-width: 1060px) {
-
-      .hero,
+      .hero-head,
       .section-head,
       .analytics-grid,
       .price-grid,
@@ -840,25 +1307,13 @@
         grid-template-columns: 1fr;
       }
 
-      .hero {
-        min-height: auto;
-      }
-
-      .hero-copy {
-        text-align: center;
-      }
-
-      .hero-actions {
-        justify-content: center;
-        margin-inline: auto;
-      }
-
-      .hero-stack {
-        justify-self: center;
-      }
-
       .proof-grid {
         grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+
+      .inspector {
+        height: 380px;
+        max-height: 380px;
       }
 
       .metrics,
@@ -869,7 +1324,7 @@
 
     @media (max-width: 820px) {
       .container {
-        width: min(100% - 34px, 1240px);
+        width: min(100% - 34px, 1020px);
       }
 
       .nav {
@@ -885,7 +1340,7 @@
       }
 
       .nav-links {
-        display: none;
+        display: none !important;
       }
 
       .nav-cta {
@@ -908,6 +1363,7 @@
         background: transparent;
         color: var(--text);
         cursor: pointer;
+        -webkit-tap-highlight-color: transparent;
       }
 
       .menu-btn span {
@@ -936,11 +1392,13 @@
         left: 0;
         right: 0;
         padding: 8px;
-        border: 1px solid var(--line);
+        border: 1px solid rgba(255, 255, 255, 0.12);
         border-radius: 20px;
         display: grid;
-        background: rgba(23, 23, 23, .94);
-        box-shadow: var(--shadow);
+        background: rgba(14, 14, 18, 0.96);
+        box-shadow: 0 20px 60px rgba(0, 0, 0, 0.7);
+        backdrop-filter: blur(16px);
+        -webkit-backdrop-filter: blur(16px);
         opacity: 0;
         transform: translateY(-6px) scale(.98);
         transform-origin: top center;
@@ -964,11 +1422,14 @@
         color: var(--muted);
         font-size: 14px;
         font-weight: 700;
+        -webkit-tap-highlight-color: transparent;
+        transition: background 160ms var(--ease-out), color 160ms var(--ease-out);
       }
 
-      .mobile-menu a:hover {
+      .mobile-menu a:hover,
+      .mobile-menu a:active {
         color: var(--text);
-        background: rgba(255, 255, 255, .06);
+        background: rgba(255, 255, 255, .08);
       }
 
       .hero {
@@ -1034,7 +1495,7 @@
 
     @media (max-width: 480px) {
       .container {
-        width: min(100% - 28px, 1240px);
+        width: min(100% - 28px, 1020px);
       }
 
       .hero-actions .btn {
@@ -1057,9 +1518,116 @@
       .chart svg {
         height: 200px;
       }
+    }
 
-      .footer-grid {
-        grid-template-columns: 1fr;
+    /* Site Footer */
+    .site-footer {
+      margin-top: 80px;
+      padding-top: 36px;
+      padding-bottom: 36px;
+      border-top: 1px solid rgba(255, 255, 255, .1);
+    }
+
+    .footer-media-card {
+      max-width: 320px;
+      margin: 0 auto 32px auto;
+      border-radius: 14px;
+      overflow: hidden;
+      border: none;
+      line-height: 0;
+      background: var(--bg);
+    }
+
+    .footer-video {
+      width: 100%;
+      height: auto;
+      display: block;
+      object-fit: cover;
+      mix-blend-mode: screen;
+    }
+
+    .footer-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .footer-brand {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .footer-brand .logo {
+      font-size: 24px;
+    }
+
+    .footer-brand .copyright {
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer-links {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      flex-wrap: wrap;
+    }
+
+    .footer-links a {
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 140ms var(--ease-out);
+    }
+
+    .footer-links a:hover {
+      color: var(--text);
+    }
+
+    .footer-social {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .footer-telegram {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--muted);
+      text-decoration: none;
+      font-size: 13px;
+      font-weight: 600;
+      transition: color 140ms var(--ease-out);
+    }
+
+    .footer-telegram svg {
+      width: 14px;
+      height: 14px;
+    }
+
+    .footer-telegram:hover {
+      color: var(--text);
+    }
+
+    @media (max-width: 768px) {
+      .footer-inner {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 16px;
+      }
+      .footer-brand {
+        flex-direction: column;
+        gap: 6px;
+      }
+      .footer-links {
+        justify-content: center;
+        gap: 14px;
       }
     }
 
@@ -1081,11 +1649,11 @@
   <nav class="nav" aria-label="Navigation">
     <a class="logo" href="#top">chiq</a>
     <div class="nav-links">
-      <a href="#analytics">Analytics</a>
-      <a href="#features">Features</a>
-      <a href="#cli">CLI</a>
-      <a href="#pricing">Pricing</a>
-      <a href="#faq">FAQ</a>
+      <a href="#analytics"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"></line><line x1="12" y1="20" x2="12" y2="4"></line><line x1="6" y1="20" x2="6" y2="14"></line></svg><span>Analytics</span></a>
+      <a href="#features"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m12 3-1.9 5.8a2 2 0 0 1-1.3 1.3L3 12l5.8 1.9a2 2 0 0 1 1.3 1.3L12 21l1.9-5.8a2 2 0 0 1 1.3-1.3L21 12l-5.8-1.9a2 2 0 0 1-1.3-1.3L12 3z"></path></svg><span>Features</span></a>
+      <a href="#cli"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="4 17 10 11 4 5"></polyline><line x1="12" y1="19" x2="20" y2="19"></line></svg><span>CLI</span></a>
+      <a href="#pricing"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20.59 13.41l-7.17 7.17a2 2 0 0 1-2.83 0L2 12V2h10l8.59 8.59a2 2 0 0 1 0 2.82z"></path><line x1="7" y1="7" x2="7.01" y2="7"></line></svg><span>Pricing</span></a>
+      <a href="#faq"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"></circle><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path><line x1="12" y1="17" x2="12.01" y2="17"></line></svg><span>FAQ</span></a>
     </div>
     <a class="btn primary nav-cta" href="https://t.me/bkzd19" target="_blank">Early Access</a>
     <button class="menu-btn" id="menu-btn" aria-label="Toggle menu"
@@ -1116,14 +1684,15 @@
         <div class="hero-stack">
           <div class="panel terminal-panel reveal">
             <div class="panel-bar">
-              <div class="dots"><span class="dot"></span><span class="dot"></span><span class="dot"></span></div><span
-                class="panel-title">Tunnel session</span>
+              <div class="dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="panel-title">chiq tunnel session — v1.4.2</span>
+              <span class="live">Connected</span>
             </div>
-            <div class="terminal-body" id="terminal">
-              <div class="terminal-line"><span class="green">$</span> chiq http 3000 --inspect</div>
-              <div class="terminal-line"><span class="violet">public</span> <span class="blue">https://demo.chiq.uz</span></div>
-              <div class="terminal-line"><span class="violet">local</span> <span class="amber">localhost:3000</span><span class="cursor">▋</span></div>
-            </div>
+            <div class="terminal-body" id="terminal"></div>
           </div>
         </div>
       </section>
@@ -1172,7 +1741,6 @@
               <div class="log"><span class="green">200</span><span>POST /telegram/update</span><span>18ms</span></div>
               <div class="log"><span class="blue">302</span><span>GET /oauth/callback</span><span>9ms</span></div>
               <div class="log"><span class="violet">101</span><span>TCP /ssh</span><span>live</span></div>
-              <div class="log"><span class="red">500</span><span>POST /retry-me</span><span>91ms</span></div>
             </div>
           </div>
           <div class="card chart">
@@ -1202,8 +1770,6 @@
             <p class="section-label">Features</p>
             <h2>Everything local work needs.</h2>
           </div>
-          <p class="section-copy">Small feature surface, sharp execution: tunnel, inspect, replay, reserve, and forward
-            without leaving development mode.</p>
         </div>
         <div class="feature-grid">
           <div class="card feature-card"><b>HTTP</b>
@@ -1276,48 +1842,63 @@
             <p class="section-label">Pricing</p>
             <h2>Simple while early access is open.</h2>
           </div>
-          <p class="section-copy">Start free during early access. The product direction is clear: core tunneling stays
-            simple, advanced team tools can grow later.</p>
         </div>
         <div class="price-grid">
           <div class="price-panel">
-            <h3>Early access</h3>
-            <p>Includes HTTP tunnels, TCP forwarding, request inspection, replay, reserved names, custom domains, and
-              basic analytics while the platform is being shaped.</p>
-            <a class="btn primary" href="https://t.me/bkzd19" target="_blank">Request Access</a>
+            <div>
+              <div style="display: flex; align-items: center; justify-content: space-between; gap: 12px;">
+                <h3>Early Access Plan</h3>
+                <span class="live">Active</span>
+              </div>
+              <div class="price-hero">
+                <span class="amount">$0</span>
+                <span class="period">/ month while early access is open</span>
+              </div>
+              <p>Includes HTTP tunnels, TCP forwarding, request inspection, replay, reserved subdomains, and live traffic analytics while the platform is being shaped.</p>
+              <ul class="price-features">
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Public HTTPS URLs & TCP Forwarding</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Real-time Request Inspector & Replay</li>
+                <li><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"></polyline></svg> Custom Subdomains & Low-latency Network</li>
+              </ul>
+            </div>
+            <a class="btn primary" href="https://t.me/bkzd19" target="_blank" style="width: 100%; text-align: center;">Get Free Early Access</a>
           </div>
           <div class="price-panel table-wrap">
             <table>
-              <tr>
-                <th>Feature</th>
-                <th>Free now</th>
-                <th>Pro later</th>
-              </tr>
-              <tr>
-                <td>HTTP tunnels</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>TCP forwarding</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>Replay</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>Custom domain</td>
-                <td class="yes">Yes</td>
-                <td class="yes">Yes</td>
-              </tr>
-              <tr>
-                <td>Advanced analytics</td>
-                <td class="dash">Basic</td>
-                <td class="soon">Planned</td>
-              </tr>
+              <thead>
+                <tr>
+                  <th>Feature</th>
+                  <th>Free now</th>
+                  <th>Pro later</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td>HTTP tunnels</td>
+                  <td><span class="yes">Yes</span></td>
+                  <td><span class="yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>TCP forwarding</td>
+                  <td><span class="yes">Yes</span></td>
+                  <td><span class="yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>Request Replay</td>
+                  <td><span class="yes">Yes</span></td>
+                  <td><span class="yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>Custom subdomain</td>
+                  <td><span class="yes">Yes</span></td>
+                  <td><span class="yes">Yes</span></td>
+                </tr>
+                <tr>
+                  <td>Advanced analytics</td>
+                  <td><span class="dash">Basic</span></td>
+                  <td><span class="soon">Planned</span></td>
+                </tr>
+              </tbody>
             </table>
           </div>
         </div>
@@ -1327,27 +1908,56 @@
         <div class="section-head">
           <div>
             <p class="section-label">FAQ</p>
-            <h2>Short answers.</h2>
+            <h2>Frequently Asked Questions.</h2>
           </div>
-          <p class="section-copy">Just enough context for a landing page. Full docs can stay separate when the product
-            is ready.</p>
         </div>
         <div class="faq">
           <details>
-            <summary>Is chiq free?</summary>
-            <p>Yes, during early access.</p>
+            <summary>
+              <span>Is chiq free to use during early access?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </summary>
+            <p>Yes! During early access, all core features—including HTTP tunnels, TCP forwarding, request inspection, replay tools, and custom subdomains—are 100% free with no credit card required.</p>
           </details>
+
           <details>
-            <summary>Does it support TCP?</summary>
-            <p>Yes. The workflow covers HTTP tunnels and raw TCP forwarding.</p>
+            <summary>
+              <span>How does TCP forwarding work for SSH & Databases?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </summary>
+            <p>Chiq supports raw TCP proxying (`chiq tcp 22` or `chiq tcp 5432`). It exposes a public TCP address and port on our edge network that securely tunnels directly to your local socket.</p>
           </details>
+
           <details>
-            <summary>Can I use custom domains?</summary>
-            <p>Yes. Custom domains and reserved subdomains are part of the planned workflow.</p>
+            <summary>
+              <span>Can I use custom domains and reserved subdomains?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </summary>
+            <p>Yes. You can reserve custom subdomains like `my-app.chiq.uz` or point your own custom domain directly to your active tunnel session via CNAME records.</p>
           </details>
+
           <details>
-            <summary>Can I inspect requests?</summary>
-            <p>Yes. Incoming requests should show status, latency, headers, response, and body context.</p>
+            <summary>
+              <span>How does the Request Inspector & Replay work?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </summary>
+            <p>Running `chiq http 3000 --debug` logs all incoming webhook payloads, HTTP headers, status codes, and latency. You can replay any request with one click directly from the inspector interface.</p>
+          </details>
+
+          <details>
+            <summary>
+              <span>Do I need to install any heavy dependencies or DNS setup?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </summary>
+            <p>No. Chiq is packaged as a single lightweight binary with zero dependencies. Run the 1-line install script and you're ready to create public tunnels instantly.</p>
+          </details>
+
+          <details>
+            <summary>
+              <span>How secure are public tunnels created with chiq?</span>
+              <span class="faq-icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg></span>
+            </summary>
+            <p>All HTTP tunnels are automatically encrypted end-to-end with TLS/HTTPS certificates. Traffic is routed over encrypted SSH/TLS transport connections directly to your machine.</p>
           </details>
         </div>
       </section>
@@ -1360,6 +1970,31 @@
           <a class="btn primary" href="https://t.me/bkzd19" target="_blank">Get Early Access</a>
         </div>
       </section>
+
+      <footer class="site-footer reveal">
+        <div class="footer-media-card">
+          <video class="footer-video" src="animation.mp4" autoplay loop muted playsinline aria-hidden="true"></video>
+        </div>
+        <div class="footer-inner">
+          <div class="footer-brand">
+            <a class="logo" href="#top">chiq</a>
+            <span class="copyright">© 2026 chiq.uz. Built for developers.</span>
+          </div>
+          <div class="footer-links">
+            <a href="#analytics">Analytics</a>
+            <a href="#features">Features</a>
+            <a href="#cli">CLI</a>
+            <a href="#pricing">Pricing</a>
+            <a href="#faq">FAQ</a>
+          </div>
+          <div class="footer-social">
+            <a href="https://t.me/bkzd19" target="_blank" rel="noopener" class="footer-telegram">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="m22 2-7 20-4-9-9-4Z"></path><path d="M22 2 11 13"></path></svg>
+              <span>Telegram</span>
+            </a>
+          </div>
+        </div>
+      </footer>
     </div>
   </main>
 
@@ -1370,9 +2005,13 @@
     const mobileMenu = document.getElementById('mobile-menu');
     let scrollTicking = false;
 
+    const navElement = document.querySelector('.nav');
     function updateScroll() {
       const max = document.documentElement.scrollHeight - window.innerHeight;
       root.style.setProperty('--scroll', max > 0 ? (window.scrollY / max).toFixed(4) : 0);
+      if (navElement) {
+        navElement.classList.toggle('scrolled', window.scrollY > 20);
+      }
     }
     function requestScrollUpdate() {
       if (scrollTicking) return;
@@ -1415,10 +2054,199 @@
         try {
           await navigator.clipboard.writeText(btn.getAttribute('data-copy'));
           btn.textContent = '✓';
-          setTimeout(() => { btn.textContent = '⧉'; }, 900);
+          btn.classList.add('copied');
+          setTimeout(() => {
+            btn.textContent = '⧉';
+            btn.classList.remove('copied');
+          }, 1100);
         } catch (error) { }
       });
     });
+
+
+
+    /* --- Full Width Terminal Animation Engine --- */
+    const terminalContainer = document.getElementById('terminal');
+
+    const terminalSteps = [
+      { type: 'cmd', text: 'chiq http 3000 --inspect --domain demo.chiq.uz' },
+      { type: 'line', text: '[INFO] Initializing secure HTTP/TCP tunnel for localhost:3000...', cls: 'blue' },
+      { type: 'line', text: '[SUCCESS] Public Endpoint : https://demo.chiq.uz', cls: 'green' },
+      { type: 'line', text: '[SUCCESS] Web Inspector   : http://127.0.0.1:4040', cls: 'violet' },
+      { type: 'line', text: '[STATUS] Session active. Forwarding traffic and inspecting payloads...', cls: 'amber' },
+      { type: 'log', status: '200 OK', cls: 'green', text: 'POST /webhooks/stripe.charge', time: '34ms', size: '1.4kB' },
+      { type: 'log', status: '200 OK', cls: 'green', text: 'POST /telegram/bot-update', time: '18ms', size: '0.8kB' },
+      { type: 'log', status: '500 ERR', cls: 'red', text: 'POST /webhooks/retry-storm', time: '91ms', size: '2.2kB [REPLAY READY]' },
+      { type: 'log', status: '101 UP', cls: 'violet', text: 'TCP 0.0.0.0:5432 -> localhost:5432', time: 'live', size: 'active' },
+      { type: 'log', status: '200 OK', cls: 'green', text: 'GET  /api/v1/user/profile', time: '11ms', size: '0.5kB' }
+    ];
+
+    let terminalTimeoutId = null;
+
+    function runFullTerminalSession() {
+      if (!terminalContainer) return;
+      if (terminalTimeoutId) clearTimeout(terminalTimeoutId);
+      terminalContainer.innerHTML = '';
+
+      let stepIdx = 0;
+
+      function processNextStep() {
+        if (stepIdx >= terminalSteps.length) {
+          terminalTimeoutId = setTimeout(runFullTerminalSession, 8500);
+          return;
+        }
+
+        const step = terminalSteps[stepIdx];
+        stepIdx++;
+
+        if (step.type === 'cmd') {
+          const cmdLine = document.createElement('div');
+          cmdLine.className = 'terminal-line show';
+          cmdLine.innerHTML = `<span class="green">$</span> <span class="cmd-text"></span><span class="cursor">▋</span>`;
+          terminalContainer.appendChild(cmdLine);
+
+          const cmdTextSpan = cmdLine.querySelector('.cmd-text');
+          const cursorSpan = cmdLine.querySelector('.cursor');
+          let charIdx = 0;
+
+          function typeCmdChar() {
+            if (charIdx < step.text.length) {
+              cmdTextSpan.textContent += step.text.charAt(charIdx);
+              charIdx++;
+              terminalTimeoutId = setTimeout(typeCmdChar, 70 + Math.random() * 40);
+            } else {
+              if (cursorSpan) cursorSpan.remove();
+              terminalTimeoutId = setTimeout(processNextStep, 600);
+            }
+          }
+          typeCmdChar();
+        } else if (step.type === 'line') {
+          const line = document.createElement('div');
+          line.className = `terminal-line show ${step.cls}`;
+          line.textContent = step.text;
+          terminalContainer.appendChild(line);
+          terminalContainer.scrollTop = terminalContainer.scrollHeight;
+          terminalTimeoutId = setTimeout(processNextStep, 600);
+        } else if (step.type === 'log') {
+          const logLine = document.createElement('div');
+          logLine.className = 'terminal-line show';
+          logLine.innerHTML = `<span class="${step.cls}" style="flex-shrink: 0;">[${step.status}]</span> <span style="flex: 1; min-width: 0; word-break: break-word;">${step.text}</span> <span style="opacity: 0.6; font-size: 12px; flex-shrink: 0;">${step.time}</span> <span style="opacity: 0.4; font-size: 12px; flex-shrink: 0;">${step.size}</span>`;
+          terminalContainer.appendChild(logLine);
+          terminalContainer.scrollTop = terminalContainer.scrollHeight;
+          terminalTimeoutId = setTimeout(processNextStep, 850);
+        }
+      }
+
+      processNextStep();
+    }
+
+    runFullTerminalSession();
+
+    /* --- Live Stream Request Inspector Simulation --- */
+    const logsContainers = [document.getElementById('logs'), document.querySelector('.activity-list')].filter(Boolean);
+    const sampleLogs = [
+      { status: '200', cls: 'green', text: 'POST /webhooks/stripe.charge', time: '34ms' },
+      { status: '200', cls: 'green', text: 'POST /telegram/bot-update', time: '19ms' },
+      { status: '200', cls: 'green', text: 'GET /api/v1/user/me', time: '12ms' },
+      { status: '500', cls: 'red', text: 'POST /webhooks/retry-queue', time: '88ms' },
+      { status: '302', cls: 'blue', text: 'GET /auth/github/callback', time: '15ms' },
+      { status: '101', cls: 'violet', text: 'TCP /database-proxy', time: 'live' }
+    ];
+
+    let logIndex = 0;
+    function addLiveLog() {
+      if (logsContainers.length === 0) return;
+      const data = sampleLogs[logIndex % sampleLogs.length];
+      logIndex++;
+
+      const flashClass = data.cls === 'green' ? 'log-flash-green' : data.cls === 'red' ? 'log-flash-red' : 'log-flash-blue';
+
+      logsContainers.forEach(container => {
+        while (container.children.length >= 4) {
+          container.removeChild(container.firstChild);
+        }
+
+        const logEl = document.createElement('div');
+        logEl.className = `log ${flashClass}`;
+        logEl.innerHTML = `<span class="${data.cls}">${data.status}</span><span>${data.text}</span><span>${data.time}</span>`;
+
+        container.appendChild(logEl);
+      });
+    }
+
+    setInterval(addLiveLog, 3200);
+
+    /* --- SVG Chart Intersection Observer Draw --- */
+    const chartLine = document.querySelector('.chart-line');
+    const chartCard = document.querySelector('.chart');
+
+    if (chartLine && chartCard) {
+      const chartObserver = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            chartLine.classList.add('drawn');
+            chartObserver.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.25 });
+
+      chartObserver.observe(chartCard);
+    }
+
+    /* --- Motion Scroll Reveal & CLI Typewriter Observer --- */
+    const revealElements = document.querySelectorAll('.reveal, .feature-grid, .commands, .price-grid, .faq');
+    let cliTyped = false;
+
+    const scrollObserver = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('show');
+
+          if (entry.target.classList.contains('commands') && !cliTyped) {
+            cliTyped = true;
+            startCliTypewriter();
+          }
+        }
+      });
+    }, { threshold: 0.15, rootMargin: '0px 0px -40px 0px' });
+
+    revealElements.forEach(el => scrollObserver.observe(el));
+
+    function colorizeCommand(text) {
+      return text
+        .replace(/\b(curl|sudo)\b/g, '<span class="cmd">$1</span>')
+        .replace(/\b(chiq)\b/g, '<span class="cmd">$1</span>')
+        .replace(/\b(http|tcp)\b/g, '<span class="sub">$1</span>')
+        .replace(/\b(\d+)\b/g, '<span class="num">$1</span>')
+        .replace(/(-[a-zA-Z]+|--[a-zA-Z0-9-]+)/g, '<span class="flag">$1</span>')
+        .replace(/(https?:\/\/[^\s|]+)/g, '<span class="url">$1</span>')
+        .replace(/(\|)/g, '<span class="op">$1</span>');
+    }
+
+    function startCliTypewriter() {
+      const commandCards = document.querySelectorAll('.command-card');
+      commandCards.forEach((card, cardIndex) => {
+        const codeElement = card.querySelector('code');
+        const copyBtn = card.querySelector('.copy-btn');
+        if (!codeElement) return;
+
+        const originalText = copyBtn ? copyBtn.getAttribute('data-copy') : codeElement.textContent.trim();
+        codeElement.textContent = '';
+
+        setTimeout(() => {
+          let charIdx = 0;
+          function typeChar() {
+            if (charIdx <= originalText.length) {
+              const currentSub = originalText.substring(0, charIdx);
+              codeElement.innerHTML = colorizeCommand(currentSub);
+              charIdx++;
+              setTimeout(typeChar, 25 + Math.random() * 15);
+            }
+          }
+          typeChar();
+        }, cardIndex * 180);
+      });
+    }
   </script>
 </body>
 
